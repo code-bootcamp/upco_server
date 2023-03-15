@@ -1,0 +1,10 @@
+FROM node:18
+
+COPY ./package.json /chat/
+COPY ./yarn.lock /chat/
+WORKDIR /chat/
+RUN yarn install --production
+
+COPY . /chat/
+
+CMD yarn start

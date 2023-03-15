@@ -2,6 +2,7 @@ version: "3.7"
 
 services:
   nestjs:
+    image: asia.gcr.io/team-project-380412/nestjs:0.0
     build:
       context: ./nestjs
       dockerfile: Dockerfile.dev
@@ -10,25 +11,13 @@ services:
     ports:
       - 3000:3000
     env_file:
-      - ./.env
-  mysql:
-    image: mysql:latest
-    environment:
-      MYSQL_DATABASE: "upco"
-      MYSQL_ROOT_PASSWORD: "root"
-    ports:
-      - 3306:3306
+      - ./.env.prod
   chat:
+    image: asia.gcr.io/team-project-380412/chat:0.0
     build:
       context: ./chat
       dockerfile: Dockerfile.dev
     ports:
       - 4000:4000
     env_file:
-      - ./.env
-  mongodb:
-    image: mongo:latest
-    environment:
-      - MONGODB_DATABASE="chat"
-    ports:
-      - 27017:27017
+      - ./.env.prod
