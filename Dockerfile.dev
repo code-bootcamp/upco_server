@@ -1,0 +1,10 @@
+FROM node:18
+
+COPY ./package.json /upco/
+COPY ./yarn.lock /upco/
+WORKDIR /upco/
+RUN yarn install
+
+COPY . /upco/
+
+CMD yarn start:dev

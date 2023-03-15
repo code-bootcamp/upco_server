@@ -1,0 +1,17 @@
+version: "3.7"
+
+services:
+  nestjs:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./src:/upco/src
+    ports:
+      - 3000:3000
+  mongodb:
+    image: mongo:latest
+    environment:
+      - MONGODB_DATABASE="upco"
+    ports:
+      - 27017:27017
