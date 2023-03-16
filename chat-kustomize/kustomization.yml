@@ -3,7 +3,3 @@ kind: Kustomization
 resources:
   - deployment.yml
   - service.yml
-configMapGenerator:
-  - name: chat-configmap
-    envs:
-      - .env
