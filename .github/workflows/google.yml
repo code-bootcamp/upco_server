@@ -24,8 +24,8 @@ env:
   GKE_ZONE: asia-northeast3
   DEPLOYMENT_NESTJS_NAME: nestjs
   DEPLOYMENT_CHAT_NAME: chat
-  IMAGE: static-site
-  IMAGE_CHAT: static_site2
+  IMAGE: nestjs
+  IMAGE_CHAT: chat
 
 jobs:
   setup-build-publish-deploy:
