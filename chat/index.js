@@ -11,7 +11,7 @@ app.get("/", (req, res) => {
 async function start() {
   try {
     await mongoose.connect(process.env.MONGODB_CONNECTION);
-    server.listen(process.env.CHAT_PORT);
+    server.listen(4000);
   } catch (error) {
     console.log(error);
     process.exit(1);
