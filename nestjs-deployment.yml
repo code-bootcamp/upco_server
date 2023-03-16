@@ -21,7 +21,7 @@ spec:
         - name: nestjs
           image: LOCATION-docker.pkg.dev/PROJECT_ID/REPOSITORY/IMAGE:TAG
           ports:
-            - containerPort: 5000
+            - containerPort: 3000
           resources:
             requests:
               cpu: 100m
