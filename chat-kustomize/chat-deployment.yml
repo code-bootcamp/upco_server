@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: chat
-          image: LOCATION-docker.pkg.dev/PROJECT_ID/REPOSITORY/IMAGE:TAG
+          image: gcr.io/PROJECT_ID/IMAGE:TAG
           ports:
             - containerPort: 4000
           resources:
