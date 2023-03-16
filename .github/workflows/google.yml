@@ -26,6 +26,8 @@ env:
   DEPLOYMENT_CHAT_NAME: chat
   IMAGE: nestjs
   IMAGE_CHAT: chat
+  CHAT_ENV: ${{ secrets.CHAT_ENV }}
+  NESTJS_ENV: ${{ secrets.NESTJS_ENV }}
 
 jobs:
   setup-build-publish-deploy:
@@ -81,6 +83,7 @@ jobs:
     - name: Deploy
       run: |-
         cd ./nestjs-kustomize
+        echo $NESTJS_ENV >> .env
         ./kustomize edit set image gcr.io/PROJECT_ID/IMAGE:TAG=gcr.io/$PROJECT_ID/$IMAGE:$GITHUB_SHA
         ./kustomize build . | kubectl apply -f -
         kubectl rollout status deployment/$DEPLOYMENT_NESTJS_NAME
@@ -138,6 +141,7 @@ jobs:
     - name: Deploy
       run: |-
         cd ./chat-kustomize
+        echo $CHAT_ENV >> .env
         ./kustomize edit set image gcr.io/PROJECT_ID/IMAGE:TAG=gcr.io/$PROJECT_ID/$IMAGE_CHAT:$GITHUB_SHA
         ./kustomize build . | kubectl apply -f -
         kubectl rollout status deployment/$DEPLOYMENT_CHAT_NAME
