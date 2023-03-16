@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nestjs
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nestjs
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  minReadySeconds: 5
+  template:
+    metadata:
+      labels:
+        app: nestjs
+    spec:
+      containers:
+        - name: nestjs
+          image: gcr.io/PROJECT_ID/IMAGE:TAG
+          env:
+            - name: "TYPEORM_HOST"
+              valueFrom:
+                configMapKeyRef:
+                  key: "TYPEORM_HOST"
+                  name: "nestjs-configmap"
+              name: "TYPEORM_PORT"
+              valueFrom:
+                configMapKeyRef:
+                  key: "TYPEORM_PORT"
+                  name: "nestjs-configmap"
+              name: "TYPEORM_USERNAME"
+              valueFrom:
+                configMapKeyRef:
+                  key: "TYPEORM_USERNAME"
+                  name: "nestjs-configmap"
+              name: "TYPEORM_PASSWORD"
+              valueFrom:
+                configMapKeyRef:
+                  key: "TYPEORM_PASSWORD"
+                  name: "nestjs-configmap"
+              name: "TYPEORM_DATABASE"
+              valueFrom:
+                configMapKeyRef:
+                  key: "TYPEORM_DATABASE"
+                  name: "nestjs-configmap"
+          ports:
+            - containerPort: 3000
+          resources:
+            requests:
+              cpu: 100m
+            limits:
+              cpu: 100m
