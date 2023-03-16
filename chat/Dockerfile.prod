@@ -1,7 +1,7 @@
 FROM node:18
 
 COPY ./chat/package.json /chat/
-COPY ./caht/yarn.lock /chat/
+COPY ./chat/yarn.lock /chat/
 WORKDIR /chat/
 RUN /bin/sh -c yarn install --production
 
