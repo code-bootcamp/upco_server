@@ -3,3 +3,6 @@ kind: Kustomization
 resources:
   - deployment.yml
   - service.yml
+configMapGenerator:
+  - name: nestjs-config
+    env: .env
