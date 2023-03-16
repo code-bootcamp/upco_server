@@ -20,12 +20,6 @@ spec:
       containers:
         - name: chat
           image: gcr.io/PROJECT_ID/IMAGE:TAG
-          env:
-            - name: "MONGODB_CONNECTION"
-              valueFrom:
-                configMapKeyRef:
-                  key: "MONGODB_CONNECTION"
-                  name: "chat-configmap"
           ports:
             - containerPort: 4000
           resources:
