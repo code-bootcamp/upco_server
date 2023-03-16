@@ -1,11 +1,11 @@
 FROM node:18
 
-COPY ./package.json /upco/
-COPY ./yarn.lock /upco/
+COPY ./nestjs/package.json /upco/
+COPY ./nestjs/yarn.lock /upco/
 WORKDIR /upco/
 RUN yarn install --production
 
-COPY . /upco/
+COPY ./nestjs /upco/
 
 RUN yarn build
 CMD yarn start:prod
