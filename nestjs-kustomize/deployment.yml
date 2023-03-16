@@ -26,22 +26,22 @@ spec:
                 configMapKeyRef:
                   key: "TYPEORM_HOST"
                   name: "nestjs-configmap"
-              name: "TYPEORM_PORT"
+            - name: "TYPEORM_PORT"
               valueFrom:
                 configMapKeyRef:
                   key: "TYPEORM_PORT"
                   name: "nestjs-configmap"
-              name: "TYPEORM_USERNAME"
+            - name: "TYPEORM_USERNAME"
               valueFrom:
                 configMapKeyRef:
                   key: "TYPEORM_USERNAME"
                   name: "nestjs-configmap"
-              name: "TYPEORM_PASSWORD"
+            - name: "TYPEORM_PASSWORD"
               valueFrom:
                 configMapKeyRef:
                   key: "TYPEORM_PASSWORD"
                   name: "nestjs-configmap"
-              name: "TYPEORM_DATABASE"
+            - name: "TYPEORM_DATABASE"
               valueFrom:
                 configMapKeyRef:
                   key: "TYPEORM_DATABASE"
