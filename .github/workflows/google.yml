@@ -142,7 +142,7 @@ jobs:
       run: |-
         cd ./chat-kustomize
         echo $CHAT_ENV >> .env
-        cat ./env
+        cat ./.env
         ./kustomize edit set image gcr.io/PROJECT_ID/IMAGE:TAG=gcr.io/$PROJECT_ID/$IMAGE_CHAT:$GITHUB_SHA
         ./kustomize build . | kubectl apply -f -
         kubectl rollout status deployment/$DEPLOYMENT_CHAT_NAME
