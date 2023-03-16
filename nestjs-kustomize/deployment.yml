@@ -20,32 +20,6 @@ spec:
       containers:
         - name: nestjs
           image: gcr.io/PROJECT_ID/IMAGE:TAG
-          env:
-            - name: "TYPEORM_HOST"
-              valueFrom:
-                configMapKeyRef:
-                  key: "TYPEORM_HOST"
-                  name: "nestjs-configmap"
-            - name: "TYPEORM_PORT"
-              valueFrom:
-                configMapKeyRef:
-                  key: "TYPEORM_PORT"
-                  name: "nestjs-configmap"
-            - name: "TYPEORM_USERNAME"
-              valueFrom:
-                configMapKeyRef:
-                  key: "TYPEORM_USERNAME"
-                  name: "nestjs-configmap"
-            - name: "TYPEORM_PASSWORD"
-              valueFrom:
-                configMapKeyRef:
-                  key: "TYPEORM_PASSWORD"
-                  name: "nestjs-configmap"
-            - name: "TYPEORM_DATABASE"
-              valueFrom:
-                configMapKeyRef:
-                  key: "TYPEORM_DATABASE"
-                  name: "nestjs-configmap"
           ports:
             - containerPort: 3000
           resources:
