@@ -6,4 +6,4 @@ resources:
 configMapGenerator:
   - name: nestjs-configmap
     envs:
-      - .env
+      - ./.env

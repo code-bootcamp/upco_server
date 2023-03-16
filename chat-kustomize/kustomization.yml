@@ -6,4 +6,4 @@ resources:
 configMapGenerator:
   - name: chat-configmap
     envs:
-      - .env
+      - ./.env
