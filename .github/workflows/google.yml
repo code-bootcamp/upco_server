@@ -34,68 +34,68 @@ env:
   TYPEORM_USERNAME: ${{ secrets.TYPEORM_USERNAME }}
   
 jobs:
-#   setup-build-publish-deploy:
-#     name: Setup, Build, Publish, and Deploy for nestjs
-#     runs-on: ubuntu-latest
-#     environment: production
+  setup-build-publish-deploy:
+    name: Setup, Build, Publish, and Deploy for nestjs
+    runs-on: ubuntu-latest
+    environment: production
 
-#     steps:
-#     - name: Checkout
-#       uses: actions/checkout@v3
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
 
-#     # Setup gcloud CLI
-#     - uses: google-github-actions/setup-gcloud@94337306dda8180d967a56932ceb4ddcf01edae7
-#       with:
-#         service_account_key: ${{ secrets.GKE_SA_KEY }}
-#         project_id: ${{ secrets.GKE_PROJECT }}
+    # Setup gcloud CLI
+    - uses: google-github-actions/setup-gcloud@94337306dda8180d967a56932ceb4ddcf01edae7
+      with:
+        service_account_key: ${{ secrets.GKE_SA_KEY }}
+        project_id: ${{ secrets.GKE_PROJECT }}
 
-#     # Configure Docker to use the gcloud command-line tool as a credential
-#     # helper for authentication
-#     - run: |-
-#         gcloud --quiet auth configure-docker
+    # Configure Docker to use the gcloud command-line tool as a credential
+    # helper for authentication
+    - run: |-
+        gcloud --quiet auth configure-docker
 
-#     # Get the GKE credentials so we can deploy to the cluster
-#     - uses: google-github-actions/get-gke-credentials@fb08709ba27618c31c09e014e1d8364b02e5042e
-#       with:
-#         cluster_name: ${{ env.GKE_CLUSTER }}
-#         location: ${{ env.GKE_ZONE }}
-#         credentials: ${{ secrets.GKE_SA_KEY }}
+    # Get the GKE credentials so we can deploy to the cluster
+    - uses: google-github-actions/get-gke-credentials@fb08709ba27618c31c09e014e1d8364b02e5042e
+      with:
+        cluster_name: ${{ env.GKE_CLUSTER }}
+        location: ${{ env.GKE_ZONE }}
+        credentials: ${{ secrets.GKE_SA_KEY }}
 
-#     # Build the Docker image
-#     - name: Build
-#       run: |-
-#         docker build \
-#           -f "./nestjs/Dockerfile.prod" \
-#           --tag "gcr.io/$PROJECT_ID/$IMAGE:$GITHUB_SHA" \
-#           --build-arg GITHUB_SHA="$GITHUB_SHA" \
-#           --build-arg GITHUB_REF="$GITHUB_REF" \
-#           .
+    # Build the Docker image
+    - name: Build
+      run: |-
+        docker build \
+          -f "./nestjs/Dockerfile.prod" \
+          --tag "gcr.io/$PROJECT_ID/$IMAGE:$GITHUB_SHA" \
+          --build-arg GITHUB_SHA="$GITHUB_SHA" \
+          --build-arg GITHUB_REF="$GITHUB_REF" \
+          .
 
-#     # Push the Docker image to Google Container Registry
-#     - name: Publish
-#       run: |-
-#         docker push "gcr.io/$PROJECT_ID/$IMAGE:$GITHUB_SHA"
+    # Push the Docker image to Google Container Registry
+    - name: Publish
+      run: |-
+        docker push "gcr.io/$PROJECT_ID/$IMAGE:$GITHUB_SHA"
 
-#     # Set up kustomize
-#     - name: Set up Kustomize
-#       run: |-
-#         cd ./nestjs-kustomize
-#         curl -sfLo kustomize https://github.com/kubernetes-sigs/kustomize/releases/download/v3.1.0/kustomize_3.1.0_linux_amd64
-#         chmod u+x ./kustomize
+    # Set up kustomize
+    - name: Set up Kustomize
+      run: |-
+        cd ./nestjs-kustomize
+        curl -sfLo kustomize https://github.com/kubernetes-sigs/kustomize/releases/download/v3.1.0/kustomize_3.1.0_linux_amd64
+        chmod u+x ./kustomize
 
-#     # Deploy the Docker image to the GKE cluster
-#     - name: Deploy
-#       run: |-
-#         cd ./nestjs-kustomize
-#         echo $TYPEORM_DATABASE >> .env
-#         echo $TYPEORM_HOST >> .env
-#         echo $TYPEORM_PASSWORD >> .env
-#         echo $TYPEORM_PORT >> .env
-#         echo $TYPEORM_USERNAME >> .env
-#         ./kustomize edit set image gcr.io/PROJECT_ID/IMAGE:TAG=gcr.io/$PROJECT_ID/$IMAGE:$GITHUB_SHA
-#         ./kustomize build . | kubectl apply -f -
-#         kubectl rollout status deployment/$DEPLOYMENT_NESTJS_NAME
-#         kubectl get services -o wide
+    # Deploy the Docker image to the GKE cluster
+    - name: Deploy
+      run: |-
+        cd ./nestjs-kustomize
+        echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> .env
+        echo TYPEORM_HOST=$TYPEORM_HOST >> .env
+        echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> .env
+        echo TYPEORM_PORT=$TYPEORM_PORT >> .env
+        echo TYPEORM_USERNAME=$TYPEORM_USERNAME >> .env
+        ./kustomize edit set image gcr.io/PROJECT_ID/IMAGE:TAG=gcr.io/$PROJECT_ID/$IMAGE:$GITHUB_SHA
+        ./kustomize build . | kubectl apply -f -
+        kubectl rollout status deployment/$DEPLOYMENT_NESTJS_NAME
+        kubectl get services -o wide
   chat:
     name: Setup, Build, Publish, and Deploy for chat
     runs-on: ubuntu-latest
