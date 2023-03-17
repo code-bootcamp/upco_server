@@ -3,9 +3,13 @@ import { GraphQLModule } from "@nestjs/graphql";
 import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { UsersModule } from "./users/users.module";
+import { AuthModule } from "./auth/auth.module";
+import { JwtAccessStrategy } from "./auth/strategies/jwt-access.strategy";
+import { JwtRefreshStrategy } from "./auth/strategies/jwt-refresh.strategy";
 
 @Module({
   imports: [
+    AuthModule,
     UsersModule,
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
@@ -23,6 +27,10 @@ import { UsersModule } from "./users/users.module";
       synchronize: true,
       logging: true,
     }),
+  ],
+  providers: [
+    JwtAccessStrategy, //
+    JwtRefreshStrategy,
   ],
 })
 export class AppModule {}
