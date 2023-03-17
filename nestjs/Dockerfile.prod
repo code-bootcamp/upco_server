@@ -3,7 +3,7 @@ FROM node:18
 COPY ./nestjs/package.json /upco/
 COPY ./nestjs/yarn.lock /upco/
 WORKDIR /upco/
-RUN yarn install --production
+RUN /bin/sh -c yarn install --production
 
 COPY ./nestjs /upco/
 
