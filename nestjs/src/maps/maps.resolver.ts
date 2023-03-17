@@ -8,6 +8,7 @@ export class MapResolver {
     private readonly mapService: MapService, //
   ) {}
 
+  // GraphQL return 값, typescript 추가할 예정입니다.
   @Query(() => String)
   findAroundUsers(
     @Args("location") findAroundUsersInput: FindAroundUserInput, //
