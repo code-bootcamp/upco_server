@@ -53,3 +53,25 @@ spec:
               cpu: 100m
             limits:
               cpu: 100m
+# ---
+# apiVersion: "autoscaling/v2"
+# kind: "HorizontalPodAutoscaler"
+# metadata:
+#   name: "nestjs-autoscaling"
+#   namespace: "default"
+#   labels:
+#     app: "nestjs"
+# spec:
+#   scaleTargetRef:
+#     kind: "Deployment"
+#     name: "nestjs"
+#     apiVersion: "apps/v1"
+#   minReplicas: 1
+#   maxReplicas: 5
+#   metrics:
+#   - type: "Resource"
+#     resource:
+#       name: "cpu"
+#       target:
+#         type: "Utilization"
+#         averageUtilization: 80
