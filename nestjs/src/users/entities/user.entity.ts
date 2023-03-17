@@ -29,11 +29,11 @@ export class User {
   // @Field(() => String)
   password: string;
 
-  @Column()
+  @Column({ nullable: true })
   @Field(() => Int)
   age: number;
 
-  @Column()
+  @Column({ nullable: true })
   @Field(() => String)
   interest: string;
 
@@ -51,11 +51,11 @@ export class User {
   @Field(() => [User])
   banUser: User[];
 
-  @Column()
+  @Column({ nullable: true })
   @Field(() => Int)
   reported: number;
 
-  @Column()
+  @Column({ nullable: true })
   @Field(() => String)
   image: string;
 

@@ -11,3 +11,7 @@ export interface IUsersServiceFindOneByEmail {
 export interface IUsersServiceFindOneByHash {
   password: string;
 }
+
+export interface IUsersServiceFindLogin {
+  userId: string;
+}

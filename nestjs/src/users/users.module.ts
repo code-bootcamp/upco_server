@@ -15,5 +15,9 @@ import { UsersService } from "./users.service";
     UsersResolver, //
     UsersService,
   ],
+
+  exports: [
+    UsersService, //
+  ],
 })
 export class UsersModule {}
