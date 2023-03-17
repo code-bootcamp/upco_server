@@ -26,9 +26,13 @@ env:
   DEPLOYMENT_CHAT_NAME: chat
   IMAGE: nestjs
   IMAGE_CHAT: chat
-  CHAT_ENV: ${{ secrets.CHAT_ENV }}
-  NESTJS_ENV: ${{ secrets.NESTJS_ENV }}
-
+  MONGODB_CONNECTION: ${{ secrets.MONGODB_CONNECTION }}
+  TYPEORM_DATABASE: ${{ secrets.TYPEORM_DATABASE }}
+  TYPEORM_HOST: ${{ secrets.TYPEORM_HOST }}
+  TYPEORM_PASSWORD: ${{ secrets.TYPEORM_PASSWORD }}
+  TYPEORM_PORT: ${{ secrets.TYPEORM_PORT }}
+  TYPEORM_USERNAME: ${{ secrets.TYPEORM_USERNAME }}
+  
 jobs:
   setup-build-publish-deploy:
     name: Setup, Build, Publish, and Deploy for nestjs
@@ -83,7 +87,11 @@ jobs:
     - name: Deploy
       run: |-
         cd ./nestjs-kustomize
-        echo $NESTJS_ENV >> .env
+        echo $TYPEORM_DATABASE >> .env
+        echo $TYPEORM_HOST >> .env
+        echo $TYPEORM_PASSWORD >> .env
+        echo $TYPEORM_PORT >> .env
+        echo $TYPEORM_USERNAME >> .env
         ./kustomize edit set image gcr.io/PROJECT_ID/IMAGE:TAG=gcr.io/$PROJECT_ID/$IMAGE:$GITHUB_SHA
         ./kustomize build . | kubectl apply -f -
         kubectl rollout status deployment/$DEPLOYMENT_NESTJS_NAME
@@ -141,7 +149,7 @@ jobs:
     - name: Deploy
       run: |-
         cd ./chat-kustomize
-        echo $CHAT_ENV >> .env
+        echo $MONGODB_CONNECTION >> .env
         cat ./.env
         ./kustomize edit set image gcr.io/PROJECT_ID/IMAGE:TAG=gcr.io/$PROJECT_ID/$IMAGE_CHAT:$GITHUB_SHA
         ./kustomize build . | kubectl apply -f -
