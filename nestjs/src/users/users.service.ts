@@ -6,6 +6,7 @@ import { User } from "./entities/user.entity";
 import * as bcrypt from "bcrypt";
 import {
   IUsersServiceCreate,
+  IUsersServiceFindLogin,
   IUsersServiceFindOneByEmail,
   IUsersServiceFindOneByHash,
 } from "./interfaces/user-service.interface";
@@ -37,11 +38,10 @@ export class UsersService {
     });
   }
 
-  findLogin({ context }) {
-    const user = this.usersRepository.findOne({
-      where: { userId: context.req.user.userId },
-    });
-
+  findLogin({ userId }: IUsersServiceFindLogin): Promise<User> {
+    const user = this.usersRepository.findOne({ where: { userId } });
+    console.log(user);
+    if (!user) throw new ConflictException("나의 정보를 불러올 수 없습니다.");
     return user;
   }
 }

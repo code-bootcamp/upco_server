@@ -1,4 +1,6 @@
+import { UseGuards } from "@nestjs/common";
 import { Args, Mutation, Resolver, Query, Context } from "@nestjs/graphql";
+import { GqlAuthGuard } from "src/auth/guards/gql-auth.guard";
 import { IContext } from "src/common/interfaces/context";
 import { CreateUserInput } from "./dto/create-user.dto";
 import { User } from "./entities/user.entity";
@@ -24,11 +26,16 @@ export class UsersResolver {
     return this.usersService.findOneByEmail({ email });
   }
 
+  // 나의정보확인
+
+  @UseGuards(GqlAuthGuard("access"))
   @Query(() => User)
   fetchLoginUser(
     @Context() context: IContext, //
   ): Promise<User> {
-    return this.usersService.findLogin({ context });
+    const userId = context.req.user.userId;
+    console.log("📌", context.req.user);
+    return this.usersService.findLogin({ userId });
   }
 
   // 비밀번호 재설정
