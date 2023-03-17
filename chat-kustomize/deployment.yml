@@ -24,7 +24,7 @@ spec:
             - containerPort: 4000
           env:
             - name: MONGODB_CONNECTION
-              valueForm:
+              valueFrom:
                 configMapKeyRef:
                   name: chat-config
                   key: MONGODB_CONNECTION
