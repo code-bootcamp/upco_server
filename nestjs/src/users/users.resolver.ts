@@ -1,4 +1,5 @@
-import { Args, Mutation, Resolver, Query } from "@nestjs/graphql";
+import { Args, Mutation, Resolver, Query, Context } from "@nestjs/graphql";
+import { IContext } from "src/common/interfaces/context";
 import { CreateUserInput } from "./dto/create-user.dto";
 import { User } from "./entities/user.entity";
 import { UsersService } from "./users.service";
@@ -16,8 +17,20 @@ export class UsersResolver {
     return this.usersService.create({ createUserInput });
   }
 
-  @Query(() => String)
-  fetchUser() {
-    return "djfljsflkjfdkjf";
+  @Query(() => User)
+  fetchId(
+    @Args("email") email: string, //
+  ): Promise<User> {
+    return this.usersService.findOneByEmail({ email });
   }
+
+  @Query(() => User)
+  fetchLoginUser(
+    @Context() context: IContext, //
+  ): Promise<User> {
+    return this.usersService.findLogin({ context });
+  }
+
+  // 비밀번호 재설정
+  // 회원 정보 업데이트
 }
