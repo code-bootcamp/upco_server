@@ -14,13 +14,21 @@ app.get("/", (req, res) => {
   res.send("<h1>Hello world</h1>");
 });
 
+// 클라이언트 연결
 io.on("connection", (socket) => {
   console.log(`${nickName}님이 접속하였습니다.`);
 
+  // 클라이언트 연결 해제
   socket.on("disconnect", () => {
     console.log(`${nickName}님이 나갔습니다.`);
   });
 
+  // 에러 발생 시
+  socket.on("error", (error) => {
+    console.error(error, "에러가 발생했습니다.")
+  })
+
+  // 새로운 메시지 전송
   socket.on("new message", async (data) => {
     const message = new Message({
       name: data.name,
@@ -30,7 +38,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("typing", (data) => {
-    
+    console.log("aaa")
   })
 });
 
