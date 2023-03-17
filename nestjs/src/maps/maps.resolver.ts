@@ -1,5 +1,6 @@
 import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
 import { FindAroundUserInput } from "./dto/find-AroundUser.input";
+import { SaveUserLocationInput } from "./dto/save-userLocation.input";
 import { MapService } from "./maps.service";
 
 @Resolver()
@@ -14,5 +15,13 @@ export class MapResolver {
     @Args("location") findAroundUsersInput: FindAroundUserInput, //
   ) {
     return this.mapService.findLocation({ findAroundUsersInput });
+  }
+
+  @Mutation(() => String)
+  saveUserLocation(
+    @Args("email") email: string, //
+    @Args("location") location: SaveUserLocationInput, //
+  ): Promise<string> {
+    return this.mapService.saveLocation({ email, location });
   }
 }
