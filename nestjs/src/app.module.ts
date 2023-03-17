@@ -1,4 +1,4 @@
-import { Module } from "@nestjs/common";
+import { CacheModule, Module } from "@nestjs/common";
 import { GraphQLModule } from "@nestjs/graphql";
 import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
 import { TypeOrmModule } from "@nestjs/typeorm";
@@ -6,9 +6,13 @@ import { UsersModule } from "./users/users.module";
 import { AuthModule } from "./auth/auth.module";
 import { JwtAccessStrategy } from "./auth/strategies/jwt-access.strategy";
 import { JwtRefreshStrategy } from "./auth/strategies/jwt-refresh.strategy";
+import { RedisClientOptions } from "redis";
+import * as redisStore from "cache-manager-redis-store";
+import { MapModule } from "./maps/maps.module";
 
 @Module({
   imports: [
+    MapModule,
     AuthModule,
     UsersModule,
     GraphQLModule.forRoot<ApolloDriverConfig>({
@@ -26,6 +30,11 @@ import { JwtRefreshStrategy } from "./auth/strategies/jwt-refresh.strategy";
       entities: [__dirname + "/**/*.entity.*"],
       synchronize: true,
       logging: true,
+    }),
+    CacheModule.register<RedisClientOptions>({
+      store: redisStore,
+      url: process.env.REDIS_CONNECTION,
+      isGlobal: true,
     }),
   ],
   providers: [
