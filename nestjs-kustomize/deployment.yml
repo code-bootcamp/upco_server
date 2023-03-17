@@ -22,6 +22,32 @@ spec:
           image: gcr.io/PROJECT_ID/IMAGE:TAG
           ports:
             - containerPort: 3000
+          env:
+            - name: TYPEORM_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: nestjs-config
+                  key: TYPEORM_DATABASE
+            - name: TYPEORM_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: nestjs-config
+                  key: TYPEORM_HOST
+            - name: TYPEORM_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: nestjs-config
+                  key: TYPEORM_PASSWORD
+            - name: TYPEORM_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: nestjs-config
+                  key: TYPEORM_PORT
+            - name: TYPEORM_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: nestjs-config
+                  key: TYPEORM_USERNAME
           resources:
             requests:
               cpu: 100m
