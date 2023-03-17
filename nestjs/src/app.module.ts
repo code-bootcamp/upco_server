@@ -2,12 +2,15 @@ import { Module } from "@nestjs/common";
 import { GraphQLModule } from "@nestjs/graphql";
 import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
 import { TypeOrmModule } from "@nestjs/typeorm";
+import { UsersModule } from "./users/users.module";
+//import { User } from "./users/entities/user.entity";
 
 @Module({
   imports: [
+    UsersModule,
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
-      autoSchemaFile: "src/common/schema.gql",
+      autoSchemaFile: true,
       context: ({ req, res }) => ({ req, res }),
     }),
     TypeOrmModule.forRoot({
@@ -17,8 +20,9 @@ import { TypeOrmModule } from "@nestjs/typeorm";
       username: process.env.TYPEORM_USERNAME,
       password: process.env.TYPEORM_PASSWORD,
       database: process.env.TYPEORM_DATABASE,
-      entities: [__dirname + "./**/*.entity.ts"],
+      entities: [__dirname + "/apis/**/*.entity.*"],
       synchronize: true,
+      logging: true,
     }),
   ],
 })
