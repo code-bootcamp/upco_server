@@ -3,7 +3,6 @@ import { GraphQLModule } from "@nestjs/graphql";
 import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { UsersModule } from "./users/users.module";
-//import { User } from "./users/entities/user.entity";
 
 @Module({
   imports: [
@@ -20,7 +19,7 @@ import { UsersModule } from "./users/users.module";
       username: process.env.TYPEORM_USERNAME,
       password: process.env.TYPEORM_PASSWORD,
       database: process.env.TYPEORM_DATABASE,
-      entities: [__dirname + "/apis/**/*.entity.*"],
+      entities: [__dirname + "/**/*.entity.*"],
       synchronize: true,
       logging: true,
     }),

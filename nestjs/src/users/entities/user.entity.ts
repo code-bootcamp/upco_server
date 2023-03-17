@@ -4,6 +4,8 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  JoinTable,
+  ManyToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
@@ -32,16 +34,22 @@ export class User {
   age: number;
 
   @Column()
-  @Field(() => [String])
-  interest: string[];
+  @Field(() => String)
+  interest: string;
 
-  @Column()
-  @Field(() => [String])
-  follower: string[];
+  @ManyToMany(() => User)
+  @JoinTable()
+  @Field(() => [User])
+  friends: User[];
 
-  @Column()
-  @Field(() => [String])
-  banUser: string[];
+  @ManyToMany(() => User)
+  @JoinTable()
+  @Field(() => [User])
+  friend_requests: User[];
+
+  @ManyToMany(() => User)
+  @Field(() => [User])
+  banUser: User[];
 
   @Column()
   @Field(() => Int)
