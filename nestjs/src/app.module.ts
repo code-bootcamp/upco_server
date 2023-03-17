@@ -1,11 +1,15 @@
-import { Module } from "@nestjs/common";
+import { CacheModule, Module } from "@nestjs/common";
 import { GraphQLModule } from "@nestjs/graphql";
 import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { UsersModule } from "./users/users.module";
+import { RedisClientOptions } from "redis";
+import * as redisStore from "cache-manager-redis-store";
+import { MapModule } from "./maps/maps.module";
 
 @Module({
   imports: [
+    MapModule,
     UsersModule,
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
@@ -22,6 +26,11 @@ import { UsersModule } from "./users/users.module";
       entities: [__dirname + "/**/*.entity.*"],
       synchronize: true,
       logging: true,
+    }),
+    CacheModule.register<RedisClientOptions>({
+      store: redisStore,
+      url: process.env.REDIS_CONNECTION,
+      isGlobal: true,
     }),
   ],
 })
