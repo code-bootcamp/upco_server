@@ -29,9 +29,13 @@ services:
   mongodb:
     image: mongo:latest
     environment:
-      - MONGODB_DATABASE="chat"
+      MONGODB_DATABASE: "chat"
     ports:
       - 27017:27017
+  redis:
+    image: redis:latest
+    ports:
+      - 6379:6379
   api-gateway:
     image: nginx:latest
     volumes:
