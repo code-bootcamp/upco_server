@@ -1,4 +1,9 @@
-import { CACHE_MANAGER, Inject, Injectable } from "@nestjs/common";
+import {
+  BadRequestException,
+  CACHE_MANAGER,
+  Inject,
+  Injectable,
+} from "@nestjs/common";
 import { Cache } from "cache-manager";
 import { Redis, RedisOptions } from "ioredis";
 
@@ -16,6 +21,14 @@ export class MapService {
   // GEO-API
   async findLocation({ findAroundUsersInput }) {
     const { lat1, lng1, lat2, lng2 } = findAroundUsersInput;
+
+    this.isValidLocation(lat1, lng1);
+    this.isValidLocation(lat2, lng2);
+    if (lat1 > lat2 || lng1 > lng2) {
+      throw new BadRequestException(
+        "lat1 < lat2 && lng1 < lng2 조건을 만족해야 합니다.",
+      );
+    }
 
     const redisInfo: RedisOptions = {
       host: process.env.REDIS_HOST,
@@ -77,6 +90,8 @@ export class MapService {
     console.log(email, location);
     const { lat, lng } = location;
 
+    this.isValidLocation(lat, lng);
+
     const redisInfo: RedisOptions = {
       host: process.env.REDIS_HOST,
       port: Number(process.env.REDIS_PORT),
@@ -101,5 +116,19 @@ export class MapService {
     }
 
     return `${userId}의 위치정보가 정상적으로 저장되었습니다.`;
+  }
+
+  // 올바른 위도, 경도 값인지 검증하는 로직입니다.
+  isValidLocation(lat: number, lng: number): void {
+    if (lat < 33 || lat > 39) {
+      throw new BadRequestException(
+        "대한민국 내 사용자의 위도 값은 33 ~ 39 사이의 값이어야 합니다.",
+      );
+    }
+    if (lng < 125 || lng > 132) {
+      throw new BadRequestException(
+        "대한민국 내 사용자의 경도 값은 125 ~ 132 사이의 값이어야 합니다.",
+      );
+    }
   }
 }
