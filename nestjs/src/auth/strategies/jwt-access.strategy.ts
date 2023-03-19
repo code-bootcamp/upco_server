@@ -6,15 +6,13 @@ export class JwtAccessStrategy extends PassportStrategy(Strategy, "access") {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       secretOrKey: process.env.JWT_ACCESS_KEY,
-      passReqToCallback: true,
     });
   }
 
   validate(payload) {
-    console.log("😇", payload);
     return {
+      id: payload.sub.id,
       email: payload.sub.email,
-      userId: payload.sub,
     };
   }
 }

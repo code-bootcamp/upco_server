@@ -19,11 +19,3 @@ export interface IAuthServiceSetRefreshToken {
 export interface IAuthServiceGetRestoreToken {
   user: User | IAuthUser["user"];
 }
-
-export interface IOAuthUser {
-  user: {
-    nickname: string;
-    email: string;
-    password: string;
-  };
-}

@@ -34,7 +34,7 @@ export class AuthService {
 
   setRefreshToken({ user, res }: IAuthServiceSetRefreshToken): void {
     const refreshToken = this.jwtService.sign(
-      { sub: { email: user.email, userId: user.userId } },
+      { sub: { email: user.email, id: user.id } },
       { secret: process.env.JWT_REFRESH_KEY, expiresIn: "2w" },
     );
 
@@ -43,12 +43,12 @@ export class AuthService {
 
     // 배포환경
     // context.res.setHeader('Set-Cookie', `refreshToken=${refreshToken}; path=/; domain=.mybacksite.com; SameSite=None; Secure; httpOnly`); //
-    // context.res.setHeader("Access-Control-Allow-Origin", "https://myfrontsite.com");
+    // context.res.setHeader("Access-Control-Allow-Origin", "https://upco.space");
   }
 
   getAccessToken({ user }: IAuthServiceGetAccessToken): string {
     return this.jwtService.sign(
-      { sub: { userId: user.userId } },
+      { sub: { email: user.email, id: user.id } },
       { secret: process.env.JWT_ACCESS_KEY, expiresIn: "1h" },
     );
   }
