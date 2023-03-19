@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>채팅방 테스트</title>
+  </head>
+  <body>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      const socket = io.connect("http://localhost:4000", {
+        path: "socket.io",
+      });
+      socket.on("news", (data) => {
+        console.log(data)
+        socket.emit("test", "Hi!")
+      })
+    </script>
+  </body>
+</html>
