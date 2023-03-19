@@ -4,7 +4,6 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
-  JoinTable,
   ManyToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -15,7 +14,7 @@ import {
 export class User {
   @PrimaryGeneratedColumn("uuid")
   @Field(() => String)
-  userId: string;
+  id: string;
 
   @Column()
   @Field(() => String)
@@ -29,6 +28,10 @@ export class User {
   // @Field(() => String)
   password: string;
 
+  @Column()
+  @Field(() => String)
+  provider: string;
+
   @Column({ nullable: true })
   @Field(() => Int)
   age: number;
@@ -38,12 +41,10 @@ export class User {
   interest: string;
 
   @ManyToMany(() => User)
-  @JoinTable()
   @Field(() => [User])
   friends: User[];
 
   @ManyToMany(() => User)
-  @JoinTable()
   @Field(() => [User])
   friend_requests: User[];
 

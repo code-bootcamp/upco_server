@@ -35,12 +35,12 @@ export class UsersService {
       email,
       password: hashedPassword,
       nickname,
+      provider: "credentials",
     });
   }
 
   findLogin({ userId }: IUsersServiceFindLogin): Promise<User> {
-    const user = this.usersRepository.findOne({ where: { userId } });
-    console.log(user);
+    const user = this.usersRepository.findOne({ where: { id: userId } });
     if (!user) throw new ConflictException("나의 정보를 불러올 수 없습니다.");
     return user;
   }

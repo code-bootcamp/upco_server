@@ -1,8 +1,9 @@
-import { UseGuards } from "@nestjs/common";
+import { UseGuards } from "@nestjs/common/decorators";
 import { Args, Context, Mutation, Resolver } from "@nestjs/graphql";
+import { PublicAccess } from "src/common/decorator/public-access";
 import { IContext } from "src/common/interfaces/context";
 import { AuthService } from "./auth.service";
-import { GqlAuthGuard } from "./guards/gql-auth.guard";
+import { GqlAuthRefressGuard } from "./guards/gql-auth.guard";
 
 @Resolver()
 export class AuthResolver {
@@ -10,14 +11,13 @@ export class AuthResolver {
     private readonly authService: AuthService, //
   ) {}
 
+  @PublicAccess()
   @Mutation(() => String)
   login(
-    @Args("email") email: string, //
+    @Args("email") email: string,
     @Args("password") password: string,
     @Context() context: IContext,
   ): Promise<string> {
-    context.req;
-    context.res;
     return this.authService.login({
       email,
       password,
@@ -25,7 +25,8 @@ export class AuthResolver {
     });
   }
 
-  @UseGuards(GqlAuthGuard("refresh")) // => refreshToken 검사
+  @PublicAccess()
+  @UseGuards(GqlAuthRefressGuard)
   @Mutation(() => String)
   restoreAccessToken(
     @Context() context: IContext, //

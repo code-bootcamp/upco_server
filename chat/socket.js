@@ -5,42 +5,58 @@ const http = require("http");
 const server = http.createServer(app);
 const mongoose = require("mongoose");
 const io = socket(server);
-const cors = require("cors")
+const cors = require("cors");
+const path = require("path");
 
-const port = process.env.CHAT_PORT || 5000;
+const port = process.env.CHAT_PORT || 4000;
 
-app.use(cors())
+app.use(cors());
 app.get("/", (req, res) => {
   res.send("<h1>Hello world</h1>");
 });
 
-// 클라이언트 연결
-io.on("connection", (socket) => {
-  console.log(`${nickName}님이 접속하였습니다.`);
+module.exports = (server, app) => {
+  const io = SocketIO(server, { path: "/socket.io" });
+  app.set("io", io);
+  const chat = io.of("chat");
 
-  // 클라이언트 연결 해제
-  socket.on("disconnect", () => {
-    console.log(`${nickName}님이 나갔습니다.`);
-  });
+  // 클라이언트 연결
+  chat.on("connection", (socket) => {
+    console.log("연결!");
 
-  // 에러 발생 시
-  socket.on("error", (error) => {
-    console.error(error, "에러가 발생했습니다.")
-  })
-
-  // 새로운 메시지 전송
-  socket.on("new message", async (data) => {
-    const message = new Message({
-      name: data.name,
-      message: data.message,
+    socket.on("join", (data) => {
+      socket.join(data);
+      socket.to(data).emit("join", {
+        user: "system",
+        chat: `${nickName}님이 입장하였습니다.`
+      })
     });
-    await message.save();
-  });
 
-  socket.on("typing", (data) => {
-    console.log("aaa")
-  })
-});
+    socket.on("disconnect", () => {
+      console.log("연결 해제!");
+      const referer = socket.request.headers
+      const userCount = 0
+      if (userCount === 0) {
+        console.log("채팅방 제거")
+      } else {
+        console.log(`${nickName}님이 퇴장하였습니다.`);
+      }
+    });
+
+    // 에러 발생 시
+    socket.on("error", (error) => {
+      console.error(error, "에러가 발생했습니다.");
+    });
+
+    socket.on("test", (data) => {
+      console.log(data);
+    });
+
+    socket.interval = setInterval(() => {
+      socket.emit("news", "Hi!!");
+    }, 3000);
+  });
+};
 
 // 몽고DB 연결
 async function start() {
