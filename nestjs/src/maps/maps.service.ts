@@ -13,9 +13,7 @@ import { IlocationByUser } from "./interfaces/map-service.interface";
 @Injectable()
 export class MapService {
   constructor(
-    @Inject(CACHE_MANAGER)
-    private readonly cacheManager: Cache,
-    private readonly userService: UsersService,
+    private readonly userService: UsersService, //
   ) {}
 
   deg2rad(deg): number {
