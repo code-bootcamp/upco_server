@@ -18,20 +18,30 @@ app.get("/", (req, res) => {
 module.exports = (server, app) => {
   const io = SocketIO(server, { path: "/socket.io" });
   app.set("io", io);
-  const chat = io.of("chat")
+  const chat = io.of("chat");
 
   // 클라이언트 연결
   chat.on("connection", (socket) => {
-    console.log(`${nickName}님이 접속하였습니다.`);
-
-    // 클라이언트 연결 해제
-    socket.on("disconnect", () => {
-      console.log(`${nickName}님이 나갔습니다.`);
-    });
+    console.log("연결!");
 
     socket.on("join", (data) => {
-      socket.join(data)
-    })
+      socket.join(data);
+      socket.to(data).emit("join", {
+        user: "system",
+        chat: `${nickName}님이 입장하였습니다.`
+      })
+    });
+
+    socket.on("disconnect", () => {
+      console.log("연결 해제!");
+      const referer = socket.request.headers
+      const userCount = 0
+      if (userCount === 0) {
+        console.log("채팅방 제거")
+      } else {
+        console.log(`${nickName}님이 퇴장하였습니다.`);
+      }
+    });
 
     // 에러 발생 시
     socket.on("error", (error) => {
