@@ -1,20 +1,24 @@
 import {
   BadRequestException,
   CACHE_MANAGER,
+  HttpException,
   Inject,
   Injectable,
 } from "@nestjs/common";
 import { Cache } from "cache-manager";
 import { Redis, RedisOptions } from "ioredis";
+import { UsersService } from "src/users/users.service";
+import { IlocationByUser } from "./interfaces/map-service.interface";
 
 @Injectable()
 export class MapService {
   constructor(
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
+    private readonly userService: UsersService,
   ) {}
 
-  deg2rad(deg) {
+  deg2rad(deg): number {
     return deg * (Math.PI / 180);
   }
 
@@ -52,7 +56,7 @@ export class MapService {
     const centerLocation = this.getCenterLocation({ lat1, lng1, lat2, lng2 });
     const [centerLng, centerLat] = centerLocation;
 
-    const result = await client.georadius(
+    const aroundUsers = await client.georadius(
       "geoSet",
       centerLng,
       centerLat,
@@ -60,8 +64,13 @@ export class MapService {
       "km",
       "withCoord",
     );
-    console.log(result);
-    return result;
+
+    const userIds = aroundUsers.map((el) => (el = el[0]));
+    const locationByUsers = aroundUsers.map((el) => (el = el[1]));
+    locationByUsers.forEach((lat) => (lat[0] = lat[0].slice(0, 10)));
+    locationByUsers.forEach((lng) => (lng[1] = lng[1].slice(0, 10)));
+
+    // return this.getUsersInfo(userIds, locationByUsers);
   }
 
   getCenterLocation({ lat1, lng1, lat2, lng2 }) {
@@ -70,8 +79,22 @@ export class MapService {
     return [centerLng, centerLat];
   }
 
+  // DB에 저장된 유저 데이터와 위치정보를 매핑하는 로직입니다.
+  // userService.findOneById 완성될 시 추가할 예정입니다.
+  // async getUsersInfo(userIds: string[], locationByUsers: IlocationByUser) {
+  //   const promises = userIds.map((id) => this.userService.findOneById({ id }));
+  //   const promisedUsers = await Promise.all(promises);
+  //   promisedUsers.forEach(
+  //     (user, idx) => (
+  //       (user["lat"] = locationByUsers[idx][1]),
+  //       (user["lng"] = locationByUsers[idx][0])
+  //     ),
+  //   );
+  //   return promisedUsers;
+  // }
+
   // 두 좌표 사이의 거리를 구하는 로직입니다.
-  getDistanceFromLatLonInKm({ lat1, lng1, lat2, lng2 }) {
+  getDistanceFromLatLonInKm({ lat1, lng1, lat2, lng2 }): number {
     const R = 6371;
     const dLat = this.deg2rad(lat2 - lat1);
     const dLon = this.deg2rad(lng2 - lng1);
@@ -86,8 +109,9 @@ export class MapService {
     return d / 2;
   }
 
-  async saveLocation({ email, location }): Promise<string> {
-    console.log(email, location);
+  async saveLocation({ context, location }): Promise<string> {
+    const id = context.req.user.id;
+    const email = context.req.user.email;
     const { lat, lng } = location;
 
     this.isValidLocation(lat, lng);
@@ -98,24 +122,21 @@ export class MapService {
       db: Number(process.env.REDIS_DB),
     };
 
-    // userDB 에 접근하여 아이딧값을 가져오는 로직을 사용할 예정입니다.
-
     const client = new Redis(redisInfo);
-    const userId = "tempData";
 
     try {
       // redis 내 ttlSet 객체 안에 유저 아이디와 ttl을 저장하는 로직입니다.
-      const ttl = 30000;
+      const ttl = 300000;
       const value = Date.now() + ttl;
-      await client.zadd("ttlSet", value, userId);
+      await client.zadd("ttlSet", value, id);
       // redis 내 geoSet 객체 안에 유저 아이디와 위치정보를 저장하는 로직입니다.
-      client.geoadd("geoSet", lng, lat, userId);
+      client.geoadd("geoSet", lng, lat, id);
     } catch (error) {
       console.log(error);
+      throw new HttpException(error.message, error.status);
       return;
     }
-
-    return `${userId}의 위치정보가 정상적으로 저장되었습니다.`;
+    return `${email}의 위치정보가 정상적으로 저장되었습니다.`;
   }
 
   // 올바른 위도, 경도 값인지 검증하는 로직입니다.
