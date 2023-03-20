@@ -1,72 +1,49 @@
-const express = require("express");
-const socket = require("socket.io");
-const app = express();
-const http = require("http");
-const server = http.createServer(app);
-const mongoose = require("mongoose");
-const io = socket(server);
-const cors = require("cors");
-const path = require("path");
+const SocketIO = require('socket.io');
+const { removeRoom } = require('./services');
 
-const port = process.env.CHAT_PORT || 4000;
+module.exports = (server, app, sessionMiddleware) => {
+  const io = SocketIO(server, { path: '/socket.io' });
+  app.set('io', io);
+  const room = io.of('/room');
+  const chat = io.of('/chat');
 
-app.use(cors());
-app.get("/", (req, res) => {
-  res.send("<h1>Hello world</h1>");
-});
+  const wrap = middleware => (socket, next) => middleware(socket.request, {}, next);
+  chat.use(wrap(sessionMiddleware));
 
-module.exports = (server, app) => {
-  const io = SocketIO(server, { path: "/socket.io" });
-  app.set("io", io);
-  const chat = io.of("chat");
+  room.on('connection', (socket) => {
+    console.log('room 네임스페이스에 접속');
+    socket.on('disconnect', () => {
+      console.log('room 네임스페이스 접속 해제');
+    });
+  });
 
-  // 클라이언트 연결
-  chat.on("connection", (socket) => {
-    console.log("연결!");
+  chat.on('connection', (socket) => {
+    console.log('chat 네임스페이스에 접속');
 
-    socket.on("join", (data) => {
+    socket.on('join', (data) => {
       socket.join(data);
-      socket.to(data).emit("join", {
-        user: "system",
-        chat: `${nickName}님이 입장하였습니다.`
-      })
+      socket.to(data).emit('join', {
+        user: 'system',
+        chat: `${socket.request.session.color}님이 입장하셨습니다.`,
+      });
     });
 
-    socket.on("disconnect", () => {
-      console.log("연결 해제!");
-      const referer = socket.request.headers
-      const userCount = 0
-      if (userCount === 0) {
-        console.log("채팅방 제거")
+    socket.on('disconnect', async () => {
+      console.log('chat 네임스페이스 접속 해제');
+      const { referer } = socket.request.headers; // 브라우저 주소가 들어있음
+      const roomId = new URL(referer).pathname.split('/').at(-1);
+      const currentRoom = chat.adapter.rooms.get(roomId);
+      const userCount = currentRoom?.size || 0;
+      if (userCount === 0) { // 유저가 0명이면 방 삭제
+        await removeRoom(roomId); // 컨트롤러 대신 서비스를 사용
+        room.emit('removeRoom', roomId);
+        console.log('방 제거 요청 성공');
       } else {
-        console.log(`${nickName}님이 퇴장하였습니다.`);
+        socket.to(roomId).emit('exit', {
+          user: 'system',
+          chat: `${socket.request.session.color}님이 퇴장하셨습니다.`,
+        });
       }
     });
-
-    // 에러 발생 시
-    socket.on("error", (error) => {
-      console.error(error, "에러가 발생했습니다.");
-    });
-
-    socket.on("test", (data) => {
-      console.log(data);
-    });
-
-    socket.interval = setInterval(() => {
-      socket.emit("news", "Hi!!");
-    }, 3000);
   });
 };
-
-// 몽고DB 연결
-async function start() {
-  try {
-    await mongoose.connect(process.env.MONGODB_CONNECTION);
-    server.listen(4000);
-  } catch (error) {
-    console.log(error);
-    process.exit(1);
-  }
-}
-
-start();
