@@ -39,7 +39,7 @@ export class UsersService {
   }
 
   async create({ createUserInput }: IUsersServiceCreate): Promise<User> {
-    const { nickname, email, password, age } = createUserInput;
+    const { nickname, email, password } = createUserInput;
     const user = await this.findOneByEmail({ email });
     if (user) throw new ConflictException("이미 등록된 이메일입니다!");
     const hashedPassword = await this.findOneByHash({ password });
@@ -47,7 +47,6 @@ export class UsersService {
       email,
       password: hashedPassword,
       nickname,
-      age,
       provider: "credentials",
     });
   }
