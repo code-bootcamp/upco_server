@@ -3,7 +3,7 @@ import { PublicAccess } from "src/common/decorator/public-access";
 import { IContext } from "src/common/interfaces/context";
 import { CreateUserInput } from "./dto/create-user.dto";
 import { UpdateAllInput } from "./dto/update-all.input";
-import { UpdateUserInput } from "./dto/update-user.input";
+import { UpdateUserPwdInput } from "./dto/update-user.input";
 import { User } from "./entities/user.entity";
 import { UsersService } from "./users.service";
 
@@ -37,18 +37,17 @@ export class UsersResolver {
     return this.usersService.findLogin({ userId });
   }
 
-  @PublicAccess()
   @Mutation(() => User)
   updateUserPwd(
     @Context() context: IContext,
-    @Args("updateUserInput") updateUserInput: UpdateUserInput,
+    @Args("updateUserPwdInput") updateUserPwdInput: UpdateUserPwdInput,
   ): Promise<User> {
     const id = context.req.user.id;
     console.log("✅", id);
-    return this.usersService.update({ id, updateUserInput });
+    return this.usersService.update({ id, updateUserPwdInput });
   }
 
-  // 회원 정보 업데이트 (email, pwd, age, interest, friends, image)
+  // 회원 정보 업데이트 (email, pwd, age, interest, image)
   @Mutation(() => User)
   updateUser(
     @Context() context: IContext,
