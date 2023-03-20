@@ -1,19 +1,7 @@
-import { Field, InputType, Int } from "@nestjs/graphql";
+import { Field, InputType } from "@nestjs/graphql";
 
 @InputType()
 export class UpdateAllInput {
-  @Field(() => String)
-  nickname: string;
-
-  @Field(() => String)
-  email: string;
-
-  @Field(() => String)
-  password: string;
-
-  @Field(() => Int)
-  age: number;
-
   @Field(() => String)
   interest: string;
 

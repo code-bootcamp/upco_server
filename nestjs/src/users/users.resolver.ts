@@ -47,7 +47,7 @@ export class UsersResolver {
     return this.usersService.update({ id, updateUserPwdInput });
   }
 
-  // 회원 정보 업데이트 (email, pwd, age, interest, image)
+  // 회원 정보 업데이트 (interest, image)
   @Mutation(() => User)
   updateUser(
     @Context() context: IContext,

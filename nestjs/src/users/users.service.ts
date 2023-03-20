@@ -80,13 +80,11 @@ export class UsersService {
     id,
     updateAllInput,
   }: IUsersServiceUpdateAllInput): Promise<User> {
-    const { password, ...updateUser } = updateAllInput;
+    const { ...updateUser } = updateAllInput;
     const user = await this.findOneById({ id });
-    const pwd = await bcrypt.hash(password, 10);
 
     return this.usersRepository.save({
       ...user,
-      password: pwd,
       ...updateUser,
       updateAllInput,
     });
