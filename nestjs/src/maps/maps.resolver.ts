@@ -1,5 +1,7 @@
-import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
+import { Args, Context, Mutation, Query, Resolver } from "@nestjs/graphql";
+import { IContext } from "src/common/interfaces/context";
 import { FindAroundUserInput } from "./dto/find-AroundUser.input";
+import { FindAroundUserOutput } from "./dto/find-AroundUser.output";
 import { SaveUserLocationInput } from "./dto/save-userLocation.input";
 import { MapService } from "./maps.service";
 
@@ -10,18 +12,18 @@ export class MapResolver {
   ) {}
 
   // GraphQL return 값, typescript 추가할 예정입니다.
-  @Query(() => String)
+  @Query(() => [FindAroundUserOutput])
   findAroundUsers(
-    @Args("location") findAroundUsersInput: FindAroundUserInput, //
+    @Args("bothLocation") findAroundUsersInput: FindAroundUserInput, //
   ) {
     return this.mapService.findLocation({ findAroundUsersInput });
   }
 
   @Mutation(() => String)
   saveUserLocation(
-    @Args("email") email: string, //
     @Args("location") location: SaveUserLocationInput, //
+    @Context() context: IContext,
   ): Promise<string> {
-    return this.mapService.saveLocation({ email, location });
+    return this.mapService.saveLocation({ context, location });
   }
 }
