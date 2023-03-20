@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "cache-manager-redis-store": "2.0.0",
-    "redis": "^4.6.5"
-  }
-}
