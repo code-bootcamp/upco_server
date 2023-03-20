@@ -1,3 +1,4 @@
+import { CreateFriendInput } from "../dto/create-friend.input";
 import { CreateUserInput } from "../dto/create-user.dto";
 import { UpdateAllInput } from "../dto/update-all.input";
 import { UpdateUserInput } from "../dto/update-user.input";
@@ -14,6 +15,11 @@ export interface IUsersServiceUpdateInput {
 export interface IUsersServiceUpdateAllInput {
   id: string;
   updateAllInput: UpdateAllInput;
+}
+
+export interface IUsersServiceAddFriendInput {
+  id: string;
+  createFriendInput: CreateFriendInput;
 }
 
 export interface IUsersServiceFindOneById {
