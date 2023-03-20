@@ -19,6 +19,12 @@ env:
   TYPEORM_PASSWORD: ${{ secrets.TYPEORM_PASSWORD }}
   TYPEORM_PORT: ${{ secrets.TYPEORM_PORT }}
   TYPEORM_USERNAME: ${{ secrets.TYPEORM_USERNAME }}
+  MAP_REDIS_CONNECTION: ${{ secrets.MAP_REDIS_CONNECTION }}
+  MAP_REDIS_HOST: ${{ secrets.MAP_REDIS_HOST }}
+  MAP_REDIS_PORT: ${{ secrets.MAP_REDIS_PORT }}
+  MAP_REDIS_DB: ${{ secrets.MAP_REDIS_DB }}
+  JWT_ACCESS_KEY: ${{ secrets.JWT_ACCESS_KEY }}
+  JWT_REFRESH_KEY: ${{ secrets.JWT_REFRESH_KEY }}
 
 jobs:
   nestjs:
@@ -75,6 +81,12 @@ jobs:
         echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> .env
         echo TYPEORM_PORT=$TYPEORM_PORT >> .env
         echo TYPEORM_USERNAME=$TYPEORM_USERNAME >> .env
+        echo MAP_REDIS_CONNECTION=$MAP_REDIS_CONNECTION >> .env
+        echo MAP_REDIS_HOST=$MAP_REDIS_HOST >> .env
+        echo MAP_REDIS_PORT=$MAP_REDIS_PORT >> .env
+        echo MAP_REDIS_DB=$MAP_REDIS_DB >> .env
+        echo JWT_ACCESS_KEY=$JWT_ACCESS_KEY >> .env
+        echo JWT_REFRESH_KEY=$JWT_REFRESH_KEY >> .env
         ./kustomize edit set image gcr.io/PROJECT_ID/IMAGE:TAG=gcr.io/$PROJECT_ID/$IMAGE:$GITHUB_SHA
         ./kustomize build . | kubectl apply -f -
         kubectl rollout status deployment/$DEPLOYMENT_NESTJS_NAME
