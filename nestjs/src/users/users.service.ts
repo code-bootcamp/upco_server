@@ -39,7 +39,7 @@ export class UsersService {
   }
 
   async create({ createUserInput }: IUsersServiceCreate): Promise<User> {
-    const { nickname, email, password } = createUserInput;
+    const { nickname, email, password, age } = createUserInput;
     const user = await this.findOneByEmail({ email });
     if (user) throw new ConflictException("이미 등록된 이메일입니다!");
     const hashedPassword = await this.findOneByHash({ password });
@@ -47,6 +47,7 @@ export class UsersService {
       email,
       password: hashedPassword,
       nickname,
+      age,
       provider: "credentials",
     });
   }
@@ -61,9 +62,9 @@ export class UsersService {
 
   async update({
     id,
-    updateUserInput,
+    updateUserPwdInput,
   }: IUsersServiceUpdateInput): Promise<User> {
-    const { password, ...updateUser } = updateUserInput;
+    const { password, ...updateUser } = updateUserPwdInput;
     const user = await this.findOneById({ id });
     const pwd = await bcrypt.hash(password, 10);
 
@@ -71,7 +72,7 @@ export class UsersService {
       ...user,
       password: pwd,
       ...updateUser,
-      updateUserInput,
+      updateUserPwdInput,
     });
   }
 
@@ -79,13 +80,11 @@ export class UsersService {
     id,
     updateAllInput,
   }: IUsersServiceUpdateAllInput): Promise<User> {
-    const { password, ...updateUser } = updateAllInput;
+    const { ...updateUser } = updateAllInput;
     const user = await this.findOneById({ id });
-    const pwd = await bcrypt.hash(password, 10);
 
     return this.usersRepository.save({
       ...user,
-      password: pwd,
       ...updateUser,
       updateAllInput,
     });

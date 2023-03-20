@@ -33,7 +33,7 @@ import { MapModule } from "./maps/maps.module";
     }),
     CacheModule.register<RedisClientOptions>({
       store: redisStore,
-      url: process.env.REDIS_CONNECTION,
+      url: process.env.MAP_REDIS_CONNECTION,
       isGlobal: true,
     }),
   ],
