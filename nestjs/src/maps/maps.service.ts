@@ -68,7 +68,7 @@ export class MapService {
     locationByUsers.forEach((lat) => (lat[0] = lat[0].slice(0, 10)));
     locationByUsers.forEach((lng) => (lng[1] = lng[1].slice(0, 10)));
 
-    // return this.getUsersInfo(userIds, locationByUsers);
+    return this.getUsersInfo(userIds, locationByUsers);
   }
 
   getCenterLocation({ lat1, lng1, lat2, lng2 }) {
@@ -78,18 +78,17 @@ export class MapService {
   }
 
   // DB에 저장된 유저 데이터와 위치정보를 매핑하는 로직입니다.
-  // userService.findOneById 완성될 시 추가할 예정입니다.
-  // async getUsersInfo(userIds: string[], locationByUsers: IlocationByUser) {
-  //   const promises = userIds.map((id) => this.userService.findOneById({ id }));
-  //   const promisedUsers = await Promise.all(promises);
-  //   promisedUsers.forEach(
-  //     (user, idx) => (
-  //       (user["lat"] = locationByUsers[idx][1]),
-  //       (user["lng"] = locationByUsers[idx][0])
-  //     ),
-  //   );
-  //   return promisedUsers;
-  // }
+  async getUsersInfo(userIds: string[], locationByUsers: IlocationByUser) {
+    const promises = userIds.map((id) => this.userService.findOneById({ id }));
+    const promisedUsers = await Promise.all(promises);
+    promisedUsers.forEach(
+      (user, idx) => (
+        (user["lat"] = locationByUsers[idx][1]),
+        (user["lng"] = locationByUsers[idx][0])
+      ),
+    );
+    return promisedUsers;
+  }
 
   // 두 좌표 사이의 거리를 구하는 로직입니다.
   getDistanceFromLatLonInKm({ lat1, lng1, lat2, lng2 }): number {
