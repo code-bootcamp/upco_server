@@ -1,7 +1,7 @@
 import { CreateFriendInput } from "../dto/create-friend.input";
 import { CreateUserInput } from "../dto/create-user.dto";
 import { UpdateAllInput } from "../dto/update-all.input";
-import { UpdateUserInput } from "../dto/update-user.input";
+import { UpdateUserPwdInput } from "../dto/update-user.input";
 
 export interface IUsersServiceCreate {
   createUserInput: CreateUserInput;
@@ -9,7 +9,7 @@ export interface IUsersServiceCreate {
 
 export interface IUsersServiceUpdateInput {
   id: string;
-  updateUserInput: UpdateUserInput;
+  updateUserPwdInput: UpdateUserPwdInput;
 }
 
 export interface IUsersServiceUpdateAllInput {
