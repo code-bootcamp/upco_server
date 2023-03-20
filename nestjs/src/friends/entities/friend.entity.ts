@@ -10,8 +10,12 @@ import {
 
 @Entity()
 @ObjectType()
-export class friend {
+export class Friend {
   @PrimaryGeneratedColumn("uuid")
+  @Field(() => String)
+  id: string;
+
+  @Column()
   @Field(() => String)
   friend_id: string;
 
@@ -23,8 +27,4 @@ export class friend {
   @Column()
   @Field(() => Boolean)
   success: boolean;
-
-  @Column()
-  @Field(() => String)
-  friend_requests: string;
 }
