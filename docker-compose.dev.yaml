@@ -37,8 +37,8 @@ services:
     ports:
       - 6379:6379
   api-gateway:
-    image: nginx:latest
-    volumes:
-      - ./gateway/default.dev.conf:/etc/nginx/conf.d/default.conf
+    build:
+      context: ./gateway
+      dockerfile: Dockerfile.dev
     ports:
       - 80:80
