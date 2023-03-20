@@ -6,9 +6,13 @@ import { User } from "./entities/user.entity";
 import * as bcrypt from "bcrypt";
 import {
   IUsersServiceCreate,
+  IUsersServiceDelete,
   IUsersServiceFindLogin,
   IUsersServiceFindOneByEmail,
   IUsersServiceFindOneByHash,
+  IUsersServiceFindOneById,
+  IUsersServiceUpdateAllInput,
+  IUsersServiceUpdateInput,
 } from "./interfaces/user-service.interface";
 
 @Injectable()
@@ -17,6 +21,10 @@ export class UsersService {
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
   ) {}
+
+  async findOneById({ id }: IUsersServiceFindOneById): Promise<User> {
+    return this.usersRepository.findOne({ where: { id } });
+  }
 
   async findOneByEmail({ email }: IUsersServiceFindOneByEmail): Promise<User> {
     return this.usersRepository.findOne({ where: { email } });
@@ -39,9 +47,46 @@ export class UsersService {
     });
   }
 
+  async update({
+    id,
+    updateUserInput,
+  }: IUsersServiceUpdateInput): Promise<User> {
+    const { password, ...updateUser } = updateUserInput;
+    const user = await this.findOneById({ id });
+    const pwd = await bcrypt.hash(password, 10);
+
+    return this.usersRepository.save({
+      ...user,
+      password: pwd,
+      ...updateUser,
+      updateUserInput,
+    });
+  }
+
+  async updateAll({
+    id,
+    updateAllInput,
+  }: IUsersServiceUpdateAllInput): Promise<User> {
+    const { password, ...updateUser } = updateAllInput;
+    const user = await this.findOneById({ id });
+    const pwd = await bcrypt.hash(password, 10);
+
+    return this.usersRepository.save({
+      ...user,
+      password: pwd,
+      ...updateUser,
+      updateAllInput,
+    });
+  }
+
   findLogin({ userId }: IUsersServiceFindLogin): Promise<User> {
     const user = this.usersRepository.findOne({ where: { id: userId } });
-    if (!user) throw new ConflictException("나의 정보를 불러올 수 없습니다.");
     return user;
+  }
+
+  async delete({ id }: IUsersServiceDelete): Promise<boolean> {
+    const result = await this.usersRepository.softDelete({ id });
+    console.log(result);
+    return result.affected ? true : false;
   }
 }
