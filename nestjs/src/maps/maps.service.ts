@@ -1,11 +1,4 @@
-import {
-  BadRequestException,
-  CACHE_MANAGER,
-  HttpException,
-  Inject,
-  Injectable,
-} from "@nestjs/common";
-import { Cache } from "cache-manager";
+import { BadRequestException, HttpException, Injectable } from "@nestjs/common";
 import { Redis, RedisOptions } from "ioredis";
 import { UsersService } from "src/users/users.service";
 import { IlocationByUser } from "./interfaces/map-service.interface";
