@@ -1,6 +1,7 @@
 name: Build and Deploy gateway to GKE
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - master
