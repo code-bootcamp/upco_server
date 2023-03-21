@@ -83,6 +83,21 @@ spec:
                 configMapKeyRef:
                   name: nestjs-config
                   key: ORIGIN
+            - name: MAIL_AUTH_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: nestjs-config
+                  key: MAIL_AUTH_PASSWORD
+            - name: MAIL_AUTH_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: nestjs-config
+                  key: MAIL_AUTH_USER
+            - name: MAIL_SERVICE
+              valueFrom:
+                configMapKeyRef:
+                  name: nestjs-config
+                  key: MAIL_SERVICE
           resources:
             requests:
               cpu: 100m
