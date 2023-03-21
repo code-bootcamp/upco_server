@@ -3,7 +3,7 @@ import { IContext } from "src/common/interfaces/context";
 import { BlockUserService } from "./blockUsers.service";
 import { CreateBlockUserInput } from "./dto/create-block.input";
 import { CreateReportInput } from "./dto/create-report.input";
-import { BlockUser } from "./entities/\bblockUsers.entity";
+import { BlockUser } from "./entities/blockUsers.entity";
 
 @Resolver()
 export class BlockUserResolver {

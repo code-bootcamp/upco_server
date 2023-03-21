@@ -2,7 +2,7 @@ import { Injectable, NotAcceptableException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { User } from "src/users/entities/user.entity";
 import { Repository } from "typeorm";
-import { BlockUser } from "./entities/\bblockUsers.entity";
+import { BlockUser } from "./entities/blockUsers.entity";
 import { IReportUserCreate } from "./interfaces/report-service.interface";
 
 @Injectable()
