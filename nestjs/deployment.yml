@@ -78,6 +78,11 @@ spec:
                 configMapKeyRef:
                   name: nestjs-config
                   key: JWT_REFRESH_KEY
+            - name: ORIGIN
+              valueFrom:
+                configMapKeyRef:
+                  name: nestjs-config
+                  key: ORIGIN
           resources:
             requests:
               cpu: 100m
