@@ -17,10 +17,16 @@ import { BlockUserModule } from "./blockUsers/blockUsers.module";
     MapModule,
     AuthModule,
     UsersModule,
-    GraphQLModule.forRoot<ApolloDriverConfig>({
+    GraphQLModule.forRootAsync<ApolloDriverConfig>({
       driver: ApolloDriver,
-      autoSchemaFile: true,
-      context: ({ req, res }) => ({ req, res }),
+      useFactory: () => ({
+        autoSchemaFile: true,
+        context: ({ req, res }) => ({ req, res }),
+        cors: {
+          origin: process.env.ORIGIN,
+          credentials: true,
+        },
+      }),
     }),
     TypeOrmModule.forRoot({
       type: "mysql",
@@ -32,6 +38,7 @@ import { BlockUserModule } from "./blockUsers/blockUsers.module";
       entities: [__dirname + "/**/*.entity.*"],
       synchronize: true,
       logging: true,
+      // timezone:
     }),
     CacheModule.register<RedisClientOptions>({
       store: redisStore,

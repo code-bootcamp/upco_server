@@ -9,7 +9,7 @@ const cors = require("cors");
 
 app.use(cors());
 app.get("/", (req, res) => {
-  res.send("<h1>Hello world</h1>");
+  res.send("health check");
 });
 
 async function start() {
