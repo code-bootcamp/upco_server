@@ -47,7 +47,7 @@ export class UsersResolver {
     return this.usersService.update({ id, updateUserPwdInput });
   }
 
-  // 회원 정보 업데이트 (interest, image)
+  // 회원 정보 업데이트 (age, interest, image)
   @Mutation(() => User)
   updateUser(
     @Context() context: IContext,
@@ -64,12 +64,4 @@ export class UsersResolver {
   ): Promise<boolean> {
     return this.usersService.delete({ id });
   }
-
-  // 친구 추가
-
-  // 친구 목록 조회
-
-  // 친구 삭제
-
-  //
 }

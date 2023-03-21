@@ -9,9 +9,11 @@ import { JwtRefreshStrategy } from "./auth/strategies/jwt-refresh.strategy";
 import { RedisClientOptions } from "redis";
 import * as redisStore from "cache-manager-redis-store";
 import { MapModule } from "./maps/maps.module";
+import { BlockUserModule } from "./blockUsers/blockUsers.module";
 
 @Module({
   imports: [
+    BlockUserModule,
     MapModule,
     AuthModule,
     UsersModule,

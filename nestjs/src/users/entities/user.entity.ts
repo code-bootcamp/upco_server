@@ -39,8 +39,8 @@ export class User {
   @Field(() => String)
   interest: string;
 
-  @Column({ nullable: true })
-  @Field(() => Int)
+  @Column({ default: 0 })
+  @Field(() => Int, { nullable: true })
   reported: number;
 
   @Column({ nullable: true })
