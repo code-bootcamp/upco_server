@@ -1,4 +1,5 @@
-import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
+import { Args, Context, Mutation, Query, Resolver } from "@nestjs/graphql";
+import { IContext } from "src/common/interfaces/context";
 import { BlockUserService } from "./blockUsers.service";
 import { CreateBlockUserInput } from "./dto/create-block.input";
 import { CreateReportInput } from "./dto/create-report.input";
@@ -11,8 +12,8 @@ export class BlockUserResolver {
   ) {}
 
   @Query(() => BlockUser)
-  fetchBlockOneOpponent(@Args("blockUser_id") blockUser_id: string) {
-    return this.blockUsersService.findBlockOne({ blockUser_id });
+  fetchBlockOneOpponent(@Args("blockUserId") blockUserId: string) {
+    return this.blockUsersService.findBlockOne({ blockUserId });
   }
 
   @Query(() => [BlockUser])
@@ -22,22 +23,23 @@ export class BlockUserResolver {
 
   @Mutation(() => BlockUser)
   blockOpponent(
+    @Args("userId") userId: string,
     @Args("createBlockUserInput") createBlockUserInput: CreateBlockUserInput, //
   ) {
-    return this.blockUsersService.createBlock({ createBlockUserInput });
+    return this.blockUsersService.createBlock({ userId, createBlockUserInput });
   }
 
-  @Mutation(() => Boolean)
-  unblockOpponent(@Args("blockUser_id") blockUser_id: string) {
-    return this.blockUsersService.deleteBlock({ blockUser_id });
+  unblockOpponent(@Args("blockUserId") blockUserId: string) {
+    return this.blockUsersService.deleteBlock({ blockUserId });
   }
 
   // 신고
   @Mutation(() => BlockUser)
   async reportOpponent(
-    @Args("userId") userId: string,
+    @Context() context: IContext,
     @Args("createReportInput") createReportInput: CreateReportInput, //
-  ) {
-    return this.blockUsersService.createReport({ userId, createReportInput });
+  ): Promise<BlockUser> {
+    const user = context.req.user;
+    return this.blockUsersService.createReport({ user, ...createReportInput });
   }
 }

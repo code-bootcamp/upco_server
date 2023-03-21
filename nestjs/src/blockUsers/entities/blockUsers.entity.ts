@@ -2,13 +2,10 @@ import { Field, ObjectType } from "@nestjs/graphql";
 import { User } from "src/users/entities/user.entity";
 import {
   Column,
-  CreateDateColumn,
-  DeleteDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
-  UpdateDateColumn,
 } from "typeorm";
 
 @Entity()
@@ -18,29 +15,16 @@ export class BlockUser {
   @Field(() => String)
   id: string;
 
-  @Column()
+  @Column({ default: false })
   @Field(() => String)
-  blockUser_id: string;
+  blockUserId: string;
 
   @JoinColumn()
   @ManyToOne(() => User)
   @Field(() => User)
   user: User;
 
-  @Column()
+  @Column({ default: false })
   @Field(() => String)
-  report_id: string;
-
-  //===================
-  @CreateDateColumn()
-  @Field(() => Date)
-  createAt: Date;
-
-  @UpdateDateColumn()
-  @Field(() => Date)
-  updateAt: Date;
-
-  @DeleteDateColumn()
-  @Field(() => Date)
-  deletedAt: Date;
+  reportId: string;
 }
