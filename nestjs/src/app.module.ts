@@ -9,16 +9,24 @@ import { JwtRefreshStrategy } from "./auth/strategies/jwt-refresh.strategy";
 import { RedisClientOptions } from "redis";
 import * as redisStore from "cache-manager-redis-store";
 import { MapModule } from "./maps/maps.module";
+import { BlockUserModule } from "./blockUsers/blockUsers.module";
 
 @Module({
   imports: [
+    BlockUserModule,
     MapModule,
     AuthModule,
     UsersModule,
-    GraphQLModule.forRoot<ApolloDriverConfig>({
+    GraphQLModule.forRootAsync<ApolloDriverConfig>({
       driver: ApolloDriver,
-      autoSchemaFile: true,
-      context: ({ req, res }) => ({ req, res }),
+      useFactory: () => ({
+        autoSchemaFile: true,
+        context: ({ req, res }) => ({ req, res }),
+        cors: {
+          origin: process.env.ORIGIN,
+          credentials: true,
+        },
+      }),
     }),
     TypeOrmModule.forRoot({
       type: "mysql",
@@ -30,6 +38,7 @@ import { MapModule } from "./maps/maps.module";
       entities: [__dirname + "/**/*.entity.*"],
       synchronize: true,
       logging: true,
+      // timezone:
     }),
     CacheModule.register<RedisClientOptions>({
       store: redisStore,

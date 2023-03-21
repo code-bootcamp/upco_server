@@ -10,21 +10,21 @@ import {
 
 @Entity()
 @ObjectType()
-export class Friend {
+export class BlockUser {
   @PrimaryGeneratedColumn("uuid")
   @Field(() => String)
   id: string;
 
-  @Column()
+  @Column({ default: false })
   @Field(() => String)
-  friend_id: string;
+  blockUserId: string;
 
   @JoinColumn()
   @ManyToOne(() => User)
   @Field(() => User)
   user: User;
 
-  @Column()
-  @Field(() => Boolean)
-  success: boolean;
+  @Column({ default: false })
+  @Field(() => String)
+  reportId: string;
 }
