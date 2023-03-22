@@ -1,5 +1,26 @@
-// 친구 추가
+import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
+import { Friend } from "./entities/friend.entity";
+import { FriendsService } from "./friends.service";
 
-// 친구 목록 조회
+@Resolver()
+export class FriendsResolver {
+  constructor(private readonly friendsService: FriendsService) {}
 
-// 친구 삭제
+  @Mutation(() => Friend)
+  addFriend(
+    @Args("userId") userId: string,
+    @Args("opponentId") opponentId: string,
+  ) {
+    return this.friendsService.createFriend({ userId, opponentId });
+  }
+
+  @Query(() => [Friend])
+  fetchFriends() {
+    return this.friendsService.findFriendAll();
+  }
+
+  @Mutation(() => Boolean)
+  deleteFriend(@Args("opponentId") opponentId: string): Promise<boolean> {
+    return this.friendsService.delete({ opponentId });
+  }
+}

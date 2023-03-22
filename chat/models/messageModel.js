@@ -2,17 +2,15 @@ const mongoose = require("mongoose");
 
 const MessageSchema = new mongoose.Schema(
   {
-    chatId: {
+    chatRoomId: {
       type: String,
     },
     senderId: {
       type: String,
     },
-    text: {
+    message: {
       type: String,
     },
-  },
-  {
     createdAt: {
       type: Date,
       default: Date.now,

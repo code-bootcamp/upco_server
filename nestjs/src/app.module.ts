@@ -12,13 +12,15 @@ import { MapModule } from "./maps/maps.module";
 import { BlockUserModule } from "./blockUsers/blockUsers.module";
 import { MailModule } from "./mails/mails.module";
 import { QuestionModule } from "./questions/questions.module";
+import { FriendsModule } from "./friends/friends.module";
 
 @Module({
   imports: [
+    AuthModule,
     BlockUserModule,
+    FriendsModule,
     MailModule,
     MapModule,
-    AuthModule,
     UsersModule,
     QuestionModule,
     GraphQLModule.forRootAsync<ApolloDriverConfig>({
@@ -42,11 +44,11 @@ import { QuestionModule } from "./questions/questions.module";
       entities: [__dirname + "/**/*.entity.*"],
       synchronize: true,
       logging: true,
-      // timezone:
+      timezone: process.env.TZ,
     }),
     CacheModule.register<RedisClientOptions>({
       store: redisStore,
-      url: process.env.MAP_REDIS_CONNECTION,
+      url: process.env.REDIS_CONNECTION,
       isGlobal: true,
     }),
   ],
