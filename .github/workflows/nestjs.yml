@@ -20,16 +20,21 @@ env:
   TYPEORM_PASSWORD: ${{ secrets.TYPEORM_PASSWORD }}
   TYPEORM_PORT: ${{ secrets.TYPEORM_PORT }}
   TYPEORM_USERNAME: ${{ secrets.TYPEORM_USERNAME }}
-  MAP_REDIS_CONNECTION: ${{ secrets.MAP_REDIS_CONNECTION }}
-  MAP_REDIS_HOST: ${{ secrets.MAP_REDIS_HOST }}
-  MAP_REDIS_PORT: ${{ secrets.MAP_REDIS_PORT }}
-  MAP_REDIS_DB: ${{ secrets.MAP_REDIS_DB }}
+  REDIS_CONNECTION: ${{ secrets.REDIS_CONNECTION }}
+  REDIS_HOST: ${{ secrets.REDIS_HOST }}
+  REDIS_PORT: ${{ secrets.REDIS_PORT }}
+  REDIS_DB: ${{ secrets.REDIS_DB }}
   JWT_ACCESS_KEY: ${{ secrets.JWT_ACCESS_KEY }}
   JWT_REFRESH_KEY: ${{ secrets.JWT_REFRESH_KEY }}
   ORIGIN: ${{ secrets.ORIGIN }}
   MAIL_AUTH_PASSWORD: ${{ secrets.MAIL_AUTH_PASSWORD }}
   MAIL_AUTH_USER: ${{ secrets.MAIL_AUTH_USER }}
   MAIL_SERVICE: ${{ secrets.MAIL_SERVICE }}
+  TZ: ${{ secrets.TZ }}
+  GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+  GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+  KAKAO_CLIENT_ID: ${{ secrets.KAKAO_CLIENT_ID }}
+  KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET }}
   
 jobs:
   nestjs:
@@ -86,16 +91,21 @@ jobs:
         echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> .env
         echo TYPEORM_PORT=$TYPEORM_PORT >> .env
         echo TYPEORM_USERNAME=$TYPEORM_USERNAME >> .env
-        echo MAP_REDIS_CONNECTION=$MAP_REDIS_CONNECTION >> .env
-        echo MAP_REDIS_HOST=$MAP_REDIS_HOST >> .env
-        echo MAP_REDIS_PORT=$MAP_REDIS_PORT >> .env
-        echo MAP_REDIS_DB=$MAP_REDIS_DB >> .env
+        echo REDIS_CONNECTION=$REDIS_CONNECTION >> .env
+        echo REDIS_HOST=$REDIS_HOST >> .env
+        echo REDIS_PORT=$REDIS_PORT >> .env
+        echo REDIS_DB=$REDIS_DB >> .env
         echo JWT_ACCESS_KEY=$JWT_ACCESS_KEY >> .env
         echo JWT_REFRESH_KEY=$JWT_REFRESH_KEY >> .env
         echo ORIGIN=$ORIGIN >> .env
         echo MAIL_AUTH_PASSWORD=$MAIL_AUTH_PASSWORD >> .env
         echo MAIL_AUTH_USER=$MAIL_AUTH_USER >> .env
         echo MAIL_SERVICE=$MAIL_SERVICE >> .env
+        echo TZ=$TZ >> .env
+        echo GOOGLE_CLIENT_ID=$GOOGLE_CLIENT_ID >> .env
+        echo GOOGLE_CLIENT_SECRET=$GOOGLE_CLIENT_SECRET >> .env
+        echo KAKAO_CLIENT_ID=$KAKAO_CLIENT_ID >> .env
+        echo KAKAO_CLIENT_SECRET=$KAKAO_CLIENT_SECRET >> .env
         ./kustomize edit set image gcr.io/PROJECT_ID/IMAGE:TAG=gcr.io/$PROJECT_ID/$IMAGE:$GITHUB_SHA
         ./kustomize build . | kubectl apply -f -
         kubectl rollout status deployment/$DEPLOYMENT_NESTJS_NAME

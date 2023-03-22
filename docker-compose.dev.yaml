@@ -16,6 +16,7 @@ services:
     environment:
       MYSQL_DATABASE: "upco"
       MYSQL_ROOT_PASSWORD: "root"
+      TZ: "Asia/Seoul"
     ports:
       - 3306:3306
   chat:
@@ -40,5 +41,7 @@ services:
     build:
       context: ./gateway
       dockerfile: Dockerfile.dev
+    volumes:
+      - ./gateway/default.dev.conf:/etc/nginx/nginx.conf
     ports:
       - 80:80

@@ -25,9 +25,9 @@ export class MapService {
     }
 
     const redisInfo: RedisOptions = {
-      host: process.env.MAP_REDIS_HOST,
-      port: Number(process.env.MAP_REDIS_PORT),
-      db: Number(process.env.MAP_REDIS_DB),
+      host: process.env.REDIS_HOST,
+      port: Number(process.env.REDIS_PORT),
+      db: Number(process.env.REDIS_DB),
     };
 
     // 주변 user들을 찾기 전, ttl 이 만료된 유저들을 필터링하는 로직입니다.
@@ -106,9 +106,9 @@ export class MapService {
     this.isValidLocation(lat, lng);
 
     const redisInfo: RedisOptions = {
-      host: process.env.MAP_REDIS_HOST,
-      port: Number(process.env.MAP_REDIS_PORT),
-      db: Number(process.env.MAP_REDIS_DB),
+      host: process.env.REDIS_HOST,
+      port: Number(process.env.REDIS_PORT),
+      db: Number(process.env.REDIS_DB),
     };
 
     const client = new Redis(redisInfo);
