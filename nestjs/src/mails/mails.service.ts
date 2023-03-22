@@ -2,6 +2,7 @@ import { MailerService } from "@nest-modules/mailer";
 import { Injectable, NotAcceptableException } from "@nestjs/common";
 import { IUsersServiceUpdateInput } from "src/users/interfaces/user-service.interface";
 import { UsersService } from "src/users/users.service";
+import { IEmail } from "./interfaces/mail-service.interface";
 
 @Injectable()
 export class MailService {
@@ -10,11 +11,11 @@ export class MailService {
     private readonly userService: UsersService, //
   ) {}
 
-  renderNewPassword() {
+  renderNewPassword({}: void): string {
     return String(Math.floor(Math.random() * 1000000)).padStart(6, "0");
   }
 
-  async passwordResetMailer({ email }): Promise<string> {
+  async passwordResetMailer({ email }: IEmail): Promise<string> {
     const user = this.userService.findOneByEmail({ email });
     if (!user) throw new NotAcceptableException();
 
