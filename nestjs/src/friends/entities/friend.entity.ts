@@ -17,7 +17,7 @@ export class Friend {
 
   @Column()
   @Field(() => String)
-  friend_id: string;
+  opponentId: string;
 
   @JoinColumn()
   @ManyToOne(() => User)
