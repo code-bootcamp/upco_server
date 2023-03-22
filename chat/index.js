@@ -4,12 +4,18 @@ const app = express();
 const http = require("http");
 const server = http.createServer(app);
 const mongoose = require("mongoose");
-const io = socket(server);
-const cors = require("cors");
+const cors = require("cors")
+const MessageRoute = require("./routes/MessageRoute");
+const ChatRoute = require("./routes/ChatRoute");
 
-app.use(cors());
-app.get("/", (req, res) => {
-  res.send("<h1>Hello world</h1>");
+
+app.use(cors())
+app.use(express.json())
+app.use("/chat", ChatRoute);
+app.use("/message", MessageRoute);
+
+app.get("/", function (req, res) {
+  res.sendFile(__dirname + "/index.html");
 });
 
 async function start() {
@@ -23,3 +29,4 @@ async function start() {
 }
 
 start();
+
