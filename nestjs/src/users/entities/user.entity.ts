@@ -4,7 +4,6 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
-  ManyToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
@@ -40,20 +39,8 @@ export class User {
   @Field(() => String)
   interest: string;
 
-  @ManyToMany(() => User)
-  @Field(() => [User])
-  friends: User[];
-
-  @ManyToMany(() => User)
-  @Field(() => [User])
-  friend_requests: User[];
-
-  @ManyToMany(() => User)
-  @Field(() => [User])
-  banUser: User[];
-
-  @Column({ nullable: true })
-  @Field(() => Int)
+  @Column({ default: 0 })
+  @Field(() => Int, { nullable: true })
   reported: number;
 
   @Column({ nullable: true })

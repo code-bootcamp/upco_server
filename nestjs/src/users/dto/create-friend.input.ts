@@ -1,7 +1,10 @@
 import { Field, InputType } from "@nestjs/graphql";
 
 @InputType()
-export class UpdateUserPwdInput {
+export class CreateFriendInput {
   @Field(() => String)
-  password: string;
+  id: string;
+
+  @Field(() => String)
+  email: string;
 }

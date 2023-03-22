@@ -1,4 +1,4 @@
-import { BadRequestException, HttpException, Injectable } from "@nestjs/common";
+import { Injectable, NotAcceptableException } from "@nestjs/common";
 import { Redis, RedisOptions } from "ioredis";
 import { UsersService } from "src/users/users.service";
 import { IlocationByUser } from "./interfaces/map-service.interface";
@@ -19,16 +19,15 @@ export class MapService {
 
     this.isValidLocation(lat1, lng1);
     this.isValidLocation(lat2, lng2);
+    // 위도경도 조건 불만족 시 반환
     if (lat1 > lat2 || lng1 > lng2) {
-      throw new BadRequestException(
-        "lat1 < lat2 && lng1 < lng2 조건을 만족해야 합니다.",
-      );
+      throw new NotAcceptableException();
     }
 
     const redisInfo: RedisOptions = {
-      host: process.env.REDIS_HOST,
-      port: Number(process.env.REDIS_PORT),
-      db: Number(process.env.REDIS_DB),
+      host: process.env.MAP_REDIS_HOST,
+      port: Number(process.env.MAP_REDIS_PORT),
+      db: Number(process.env.MAP_REDIS_DB),
     };
 
     // 주변 user들을 찾기 전, ttl 이 만료된 유저들을 필터링하는 로직입니다.
@@ -107,9 +106,9 @@ export class MapService {
     this.isValidLocation(lat, lng);
 
     const redisInfo: RedisOptions = {
-      host: process.env.REDIS_HOST,
-      port: Number(process.env.REDIS_PORT),
-      db: Number(process.env.REDIS_DB),
+      host: process.env.MAP_REDIS_HOST,
+      port: Number(process.env.MAP_REDIS_PORT),
+      db: Number(process.env.MAP_REDIS_DB),
     };
 
     const client = new Redis(redisInfo);
@@ -123,8 +122,7 @@ export class MapService {
       client.geoadd("geoSet", lng, lat, id);
     } catch (error) {
       console.log(error);
-      throw new HttpException(error.message, error.status);
-      return;
+      throw new NotAcceptableException();
     }
     return `${email}의 위치정보가 정상적으로 저장되었습니다.`;
   }
@@ -132,14 +130,12 @@ export class MapService {
   // 올바른 위도, 경도 값인지 검증하는 로직입니다.
   isValidLocation(lat: number, lng: number): void {
     if (lat < 33 || lat > 39) {
-      throw new BadRequestException(
-        "대한민국 내 사용자의 위도 값은 33 ~ 39 사이의 값이어야 합니다.",
-      );
+      // 위도값이 올바르지 않을 때 반환되는 오류
+      throw new NotAcceptableException();
     }
     if (lng < 125 || lng > 132) {
-      throw new BadRequestException(
-        "대한민국 내 사용자의 경도 값은 125 ~ 132 사이의 값이어야 합니다.",
-      );
+      // 경도값이 올바르지 않을 때 반환되는 오류
+      throw new NotAcceptableException();
     }
   }
 }

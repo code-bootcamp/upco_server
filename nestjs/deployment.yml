@@ -48,6 +48,41 @@ spec:
                 configMapKeyRef:
                   name: nestjs-config
                   key: TYPEORM_USERNAME
+            - name: MAP_REDIS_CONNECTION
+              valueFrom:
+                configMapKeyRef:
+                  name: nestjs-config
+                  key: MAP_REDIS_CONNECTION
+            - name: MAP_REDIS_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: nestjs-config
+                  key: MAP_REDIS_HOST
+            - name: MAP_REDIS_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: nestjs-config
+                  key: MAP_REDIS_PORT
+            - name: MAP_REDIS_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: nestjs-config
+                  key: MAP_REDIS_DB
+            - name: JWT_ACCESS_KEY
+              valueFrom:
+                configMapKeyRef:
+                  name: nestjs-config
+                  key: JWT_ACCESS_KEY
+            - name: JWT_REFRESH_KEY
+              valueFrom:
+                configMapKeyRef:
+                  name: nestjs-config
+                  key: JWT_REFRESH_KEY
+            - name: ORIGIN
+              valueFrom:
+                configMapKeyRef:
+                  name: nestjs-config
+                  key: ORIGIN
           resources:
             requests:
               cpu: 100m

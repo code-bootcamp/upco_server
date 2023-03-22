@@ -1,34 +1,24 @@
-name: Build and Deploy nestjs to GKE 
+name: Build and Deploy gateway to GKE
 
 on:
-  pull_request:
-    branches: 
+  workflow_dispatch:
+  push:
+    branches:
       - master
     paths:
-      - nestjs/**
+      - gateway/**
 
 env:
   PROJECT_ID: ${{ secrets.GKE_PROJECT }}
   GAR_LOCATION: asia-northeast3
   GKE_CLUSTER: team-project-cluster
   GKE_ZONE: asia-northeast3
-  DEPLOYMENT_NESTJS_NAME: nestjs
-  IMAGE: nestjs
-  TYPEORM_DATABASE: ${{ secrets.TYPEORM_DATABASE }}
-  TYPEORM_HOST: ${{ secrets.TYPEORM_HOST }}
-  TYPEORM_PASSWORD: ${{ secrets.TYPEORM_PASSWORD }}
-  TYPEORM_PORT: ${{ secrets.TYPEORM_PORT }}
-  TYPEORM_USERNAME: ${{ secrets.TYPEORM_USERNAME }}
-  MAP_REDIS_CONNECTION: ${{ secrets.MAP_REDIS_CONNECTION }}
-  MAP_REDIS_HOST: ${{ secrets.MAP_REDIS_HOST }}
-  MAP_REDIS_PORT: ${{ secrets.MAP_REDIS_PORT }}
-  MAP_REDIS_DB: ${{ secrets.MAP_REDIS_DB }}
-  JWT_ACCESS_KEY: ${{ secrets.JWT_ACCESS_KEY }}
-  JWT_REFRESH_KEY: ${{ secrets.JWT_REFRESH_KEY }}
+  DEPLOYMENT: gateway
+  IMAGE: gateway
 
 jobs:
-  nestjs:
-    name: Setup, Build, Publish, and Deploy for nestjs
+  gateway:
+    name: Setup, Build, Publish, and Deploy
     runs-on: ubuntu-latest
     environment: production
 
@@ -57,7 +47,7 @@ jobs:
     - name: Build
       run: |-
         docker build \
-          -f "./nestjs/Dockerfile.prod" \
+          -f "./gateway/Dockerfile.prod" \
           --tag "gcr.io/$PROJECT_ID/$IMAGE:$GITHUB_SHA" \
           --build-arg GITHUB_SHA="$GITHUB_SHA" \
           --build-arg GITHUB_REF="$GITHUB_REF" \
@@ -69,25 +59,14 @@ jobs:
     # Set up kustomize
     - name: Set up Kustomize
       run: |-
-        cd ./nestjs
+        cd ./gateway
         curl -sfLo kustomize https://github.com/kubernetes-sigs/kustomize/releases/download/v3.1.0/kustomize_3.1.0_linux_amd64
         chmod u+x ./kustomize
     # Deploy the Docker image to the GKE cluster
     - name: Deploy
       run: |-
-        cd ./nestjs
-        echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> .env
-        echo TYPEORM_HOST=$TYPEORM_HOST >> .env
-        echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> .env
-        echo TYPEORM_PORT=$TYPEORM_PORT >> .env
-        echo TYPEORM_USERNAME=$TYPEORM_USERNAME >> .env
-        echo MAP_REDIS_CONNECTION=$MAP_REDIS_CONNECTION >> .env
-        echo MAP_REDIS_HOST=$MAP_REDIS_HOST >> .env
-        echo MAP_REDIS_PORT=$MAP_REDIS_PORT >> .env
-        echo MAP_REDIS_DB=$MAP_REDIS_DB >> .env
-        echo JWT_ACCESS_KEY=$JWT_ACCESS_KEY >> .env
-        echo JWT_REFRESH_KEY=$JWT_REFRESH_KEY >> .env
+        cd ./gateway
         ./kustomize edit set image gcr.io/PROJECT_ID/IMAGE:TAG=gcr.io/$PROJECT_ID/$IMAGE:$GITHUB_SHA
         ./kustomize build . | kubectl apply -f -
-        kubectl rollout status deployment/$DEPLOYMENT_NESTJS_NAME
+        kubectl rollout status deployment/$DEPLOYMENT
         kubectl get services -o wide

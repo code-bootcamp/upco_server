@@ -8,14 +8,13 @@ const cors = require("cors")
 const MessageRoute = require("./routes/MessageRoute");
 const ChatRoute = require("./routes/ChatRoute");
 
-
 app.use(cors())
 app.use(express.json())
 app.use("/chat", ChatRoute);
 app.use("/message", MessageRoute);
 
-app.get("/", function (req, res) {
-  res.sendFile(__dirname + "/index.html");
+app.get("/", (req, res) => {
+  res.send("health check");
 });
 
 async function start() {

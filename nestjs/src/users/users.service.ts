@@ -1,4 +1,8 @@
-import { ConflictException, Injectable } from "@nestjs/common";
+import {
+  ConflictException,
+  Injectable,
+  NotAcceptableException,
+} from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { User } from "./entities/user.entity";
@@ -47,11 +51,19 @@ export class UsersService {
     });
   }
 
+  async addFriends({ createFriendInput }) {
+    const friend = await this.usersRepository.findOne({
+      where: { id: createFriendInput.id },
+    });
+    if (friend) throw new NotAcceptableException();
+    return this.usersRepository.save({ ...createFriendInput });
+  }
+
   async update({
     id,
-    updateUserInput,
+    updateUserPwdInput,
   }: IUsersServiceUpdateInput): Promise<User> {
-    const { password, ...updateUser } = updateUserInput;
+    const { password, ...updateUser } = updateUserPwdInput;
     const user = await this.findOneById({ id });
     const pwd = await bcrypt.hash(password, 10);
 
@@ -59,7 +71,7 @@ export class UsersService {
       ...user,
       password: pwd,
       ...updateUser,
-      updateUserInput,
+      updateUserPwdInput,
     });
   }
 
@@ -67,13 +79,11 @@ export class UsersService {
     id,
     updateAllInput,
   }: IUsersServiceUpdateAllInput): Promise<User> {
-    const { password, ...updateUser } = updateAllInput;
+    const { ...updateUser } = updateAllInput;
     const user = await this.findOneById({ id });
-    const pwd = await bcrypt.hash(password, 10);
 
     return this.usersRepository.save({
       ...user,
-      password: pwd,
       ...updateUser,
       updateAllInput,
     });
