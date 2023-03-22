@@ -40,11 +40,11 @@ import { MailModule } from "./mails/mails.module";
       entities: [__dirname + "/**/*.entity.*"],
       synchronize: true,
       logging: true,
-      // timezone:
+      timezone: process.env.TZ,
     }),
     CacheModule.register<RedisClientOptions>({
       store: redisStore,
-      url: process.env.MAP_REDIS_CONNECTION,
+      url: process.env.REDIS_CONNECTION,
       isGlobal: true,
     }),
   ],
