@@ -38,12 +38,12 @@ export class AuthService {
       { secret: process.env.JWT_REFRESH_KEY, expiresIn: "2w" },
     );
 
-    // 개발환경
-    res.setHeader("Set-Cookie", `refreshToken=${refreshToken}; path=/;`);
-
-    // 배포환경
-    // context.res.setHeader('Set-Cookie', `refreshToken=${refreshToken}; path=/; domain=.mybacksite.com; SameSite=None; Secure; httpOnly`); //
-    // context.res.setHeader("Access-Control-Allow-Origin", "https://upco.space");
+    res.setHeader(
+      "Set-Cookie",
+      `refreshToken=${refreshToken}; path=/; domain=.api.upco.space; SameSite=None; Secure; httpOnly`,
+    );
+    res.setHeader("Access-Control-Allow-Origin", process.env.ORIGIN);
+    res.setHeader("Access-Control-Allow-Credentials", "true");
   }
 
   getAccessToken({ user }: IAuthServiceGetAccessToken): string {
