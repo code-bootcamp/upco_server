@@ -16,7 +16,7 @@ export class BlockUser {
   id: string;
 
   @Column({ default: false })
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   blockUserId: string;
 
   @JoinColumn()
@@ -26,5 +26,5 @@ export class BlockUser {
 
   @Column({ default: false })
   @Field(() => String)
-  reportId: string;
+  reportedId: string;
 }
