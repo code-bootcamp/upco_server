@@ -11,7 +11,7 @@ export class MailService {
     private readonly userService: UsersService, //
   ) {}
 
-  renderNewPassword({}: void): string {
+  renderNewPassword(): string {
     return String(Math.floor(Math.random() * 1000000)).padStart(6, "0");
   }
 
@@ -21,12 +21,14 @@ export class MailService {
 
     // 임시 비밀번호 생성 로직 및 업데이트 로직입니다.
     const renderNewPassword = this.renderNewPassword();
+
     const input: IUsersServiceUpdateInput = {
       id: (await user).id,
       updateUserPwdInput: {
         password: renderNewPassword,
       },
     };
+
     await this.userService.update(input);
 
     // 메일 전송 로직입니다.
