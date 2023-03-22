@@ -10,10 +10,12 @@ import { RedisClientOptions } from "redis";
 import * as redisStore from "cache-manager-redis-store";
 import { MapModule } from "./maps/maps.module";
 import { BlockUserModule } from "./blockUsers/blockUsers.module";
+import { MailModule } from "./mails/mails.module";
 
 @Module({
   imports: [
     BlockUserModule,
+    MailModule,
     MapModule,
     AuthModule,
     UsersModule,
