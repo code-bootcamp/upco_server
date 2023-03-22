@@ -1,26 +1,26 @@
 const MessageModel = require("../models/messageModel");
 
 exports.addMessage = async (req, res) => {
-  const { chatId, senderId, text } = req.body;
+  const { chatRoomId, senderId, text } = req.body;
   const message = new MessageModel({
-    chatId,
+    chatRoomId,
     senderId,
-    text,
+    message,
   });
   try {
     const result = await message.save();
-    res.status(200).json(result);
+    res.status(200).send(result);
   } catch (error) {
-    res.status(500).json(error);
+    res.status(500).send(error);
   }
 };
 
 exports.getMessages = async (req, res) => {
-  const { chatId } = req.params;
+  const { chatRoomId } = req.params;
   try {
     const result = await MessageModel.find({ chatId });
-    res.status(200).json(result);
+    res.status(200).send(result);
   } catch (error) {
-    res.status(500).json(error);
+    res.status(500).send(error);
   }
 };

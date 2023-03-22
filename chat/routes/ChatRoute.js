@@ -1,13 +1,14 @@
 const express = require("express");
 const {
-  createChat,
+  createChatRoom,
   findChat,
   userChats,
 } = require("../controllers/ChatController");
 
 const router = express.Router();
 
-router.post('/', createChat);
+router.get("/", createChatRoom);
+router.post("/", createChatRoom);
 router.get('/:userId', userChats);
 router.get('/find/:firstId/:secondId', findChat);
 

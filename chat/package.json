@@ -9,7 +9,9 @@
     "express-session": "^1.17.3",
     "mongoose": "^7.0.1",
     "socket.io": "^4.6.1",
-    "socket.io-redis": "^6.1.1"
+    "socket.io-redis": "^6.1.1",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^4.6.2"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.30.5",
