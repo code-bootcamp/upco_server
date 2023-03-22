@@ -1,7 +1,13 @@
 import { Injectable, NotAcceptableException } from "@nestjs/common";
 import { Redis, RedisOptions } from "ioredis";
 import { UsersService } from "src/users/users.service";
-import { IlocationByUser } from "./interfaces/map-service.interface";
+import {
+  IBothLocation,
+  IFindAroundUsersInput,
+  IGetUsersInfo,
+  ISaveLocation,
+  IUserWithLocation,
+} from "./interfaces/map-service.interface";
 
 @Injectable()
 export class MapService {
@@ -9,25 +15,24 @@ export class MapService {
     private readonly userService: UsersService, //
   ) {}
 
-  deg2rad(deg): number {
+  deg2rad(deg: number): number {
     return deg * (Math.PI / 180);
   }
 
   // GEO-API
-  async findLocation({ findAroundUsersInput }) {
+  async findLocation({
+    findAroundUsersInput,
+  }: IFindAroundUsersInput): Promise<IUserWithLocation[]> {
     const { lat1, lng1, lat2, lng2 } = findAroundUsersInput;
 
     this.isValidLocation(lat1, lng1);
     this.isValidLocation(lat2, lng2);
-    // 위도경도 조건 불만족 시 반환
-    if (lat1 > lat2 || lng1 > lng2) {
-      throw new NotAcceptableException();
-    }
+    this.isValidLocationRange({ lat1, lng1, lat2, lng2 });
 
     const redisInfo: RedisOptions = {
-      host: process.env.MAP_REDIS_HOST,
-      port: Number(process.env.MAP_REDIS_PORT),
-      db: Number(process.env.MAP_REDIS_DB),
+      host: process.env.REDIS_HOST,
+      port: Number(process.env.REDIS_PORT),
+      db: Number(process.env.REDIS_DB),
     };
 
     // 주변 user들을 찾기 전, ttl 이 만료된 유저들을 필터링하는 로직입니다.
@@ -60,30 +65,34 @@ export class MapService {
     locationByUsers.forEach((lat) => (lat[0] = lat[0].slice(0, 10)));
     locationByUsers.forEach((lng) => (lng[1] = lng[1].slice(0, 10)));
 
-    return this.getUsersInfo(userIds, locationByUsers);
+    return this.getUsersInfo({ userIds, locationByUsers });
   }
 
-  getCenterLocation({ lat1, lng1, lat2, lng2 }) {
+  getCenterLocation({ lat1, lng1, lat2, lng2 }: IBothLocation): number[] {
     const centerLng = (lng1 + lng2) / 2;
     const centerLat = (lat1 + lat2) / 2;
     return [centerLng, centerLat];
   }
 
   // DB에 저장된 유저 데이터와 위치정보를 매핑하는 로직입니다.
-  async getUsersInfo(userIds: string[], locationByUsers: IlocationByUser) {
+  async getUsersInfo({
+    userIds,
+    locationByUsers,
+  }: IGetUsersInfo): Promise<IUserWithLocation[]> {
     const promises = userIds.map((id) => this.userService.findOneById({ id }));
     const promisedUsers = await Promise.all(promises);
-    promisedUsers.forEach(
-      (user, idx) => (
-        (user["lat"] = locationByUsers[idx][1]),
-        (user["lng"] = locationByUsers[idx][0])
-      ),
-    );
-    return promisedUsers;
+    const result: IUserWithLocation[] = promisedUsers.map((user, idx) => ({
+      ...user,
+      lat: locationByUsers[idx][1],
+      lng: locationByUsers[idx][0],
+    }));
+    return result;
   }
 
   // 두 좌표 사이의 거리를 구하는 로직입니다.
-  getDistanceFromLatLonInKm({ lat1, lng1, lat2, lng2 }): number {
+  getDistanceFromLatLonInKm(
+    { lat1, lng1, lat2, lng2 }: IBothLocation, //
+  ): number {
     const R = 6371;
     const dLat = this.deg2rad(lat2 - lat1);
     const dLon = this.deg2rad(lng2 - lng1);
@@ -98,7 +107,7 @@ export class MapService {
     return d / 2;
   }
 
-  async saveLocation({ context, location }): Promise<string> {
+  async saveLocation({ context, location }: ISaveLocation): Promise<string> {
     const id = context.req.user.id;
     const email = context.req.user.email;
     const { lat, lng } = location;
@@ -106,9 +115,9 @@ export class MapService {
     this.isValidLocation(lat, lng);
 
     const redisInfo: RedisOptions = {
-      host: process.env.MAP_REDIS_HOST,
-      port: Number(process.env.MAP_REDIS_PORT),
-      db: Number(process.env.MAP_REDIS_DB),
+      host: process.env.REDIS_HOST,
+      port: Number(process.env.REDIS_PORT),
+      db: Number(process.env.REDIS_DB),
     };
 
     const client = new Redis(redisInfo);
@@ -135,6 +144,12 @@ export class MapService {
     }
     if (lng < 125 || lng > 132) {
       // 경도값이 올바르지 않을 때 반환되는 오류
+      throw new NotAcceptableException();
+    }
+  }
+
+  isValidLocationRange({ lat1, lng1, lat2, lng2 }: IBothLocation): void {
+    if (lat1 > lat2 || lng1 > lng2) {
       throw new NotAcceptableException();
     }
   }

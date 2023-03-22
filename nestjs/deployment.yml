@@ -48,26 +48,26 @@ spec:
                 configMapKeyRef:
                   name: nestjs-config
                   key: TYPEORM_USERNAME
-            - name: MAP_REDIS_CONNECTION
+            - name: REDIS_CONNECTION
               valueFrom:
                 configMapKeyRef:
                   name: nestjs-config
-                  key: MAP_REDIS_CONNECTION
-            - name: MAP_REDIS_HOST
+                  key: REDIS_CONNECTION
+            - name: REDIS_HOST
               valueFrom:
                 configMapKeyRef:
                   name: nestjs-config
-                  key: MAP_REDIS_HOST
-            - name: MAP_REDIS_PORT
+                  key: REDIS_HOST
+            - name: REDIS_PORT
               valueFrom:
                 configMapKeyRef:
                   name: nestjs-config
-                  key: MAP_REDIS_PORT
-            - name: MAP_REDIS_DB
+                  key: REDIS_PORT
+            - name: REDIS_DB
               valueFrom:
                 configMapKeyRef:
                   name: nestjs-config
-                  key: MAP_REDIS_DB
+                  key: REDIS_DB
             - name: JWT_ACCESS_KEY
               valueFrom:
                 configMapKeyRef:
@@ -98,6 +98,31 @@ spec:
                 configMapKeyRef:
                   name: nestjs-config
                   key: MAIL_SERVICE
+            - name: TZ
+              valueFrom:
+                configMapKeyRef:
+                  name: nestjs-config
+                  key: TZ
+            - name: GOOGLE_CLIENT_ID
+              valueFrom:
+                configMapKeyRef:
+                  name: nestjs-config
+                  key: GOOGLE_CLIENT_ID
+            - name: GOOGLE_CLIENT_SECRET
+              valueFrom:
+                configMapKeyRef:
+                  name: nestjs-config
+                  key: GOOGLE_CLIENT_SECRET
+            - name: KAKAO_CLIENT_ID
+              valueFrom:
+                configMapKeyRef:
+                  name: nestjs-config
+                  key: KAKAO_CLIENT_ID
+            - name: KAKAO_CLIENT_SECRET
+              valueFrom:
+                configMapKeyRef:
+                  name: nestjs-config
+                  key: KAKAO_CLIENT_SECRET
           resources:
             requests:
               cpu: 100m

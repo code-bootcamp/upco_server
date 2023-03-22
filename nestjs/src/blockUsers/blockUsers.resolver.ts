@@ -36,7 +36,6 @@ export class BlockUserResolver {
     return this.blockUsersService.deleteBlock({ blockUserId });
   }
 
-  // 신고
   @Mutation(() => User)
   async reportOpponent(
     @Args("reportedId") reportedId: string, //

@@ -36,7 +36,6 @@ export class BlockUserService {
     });
   }
 
-  // 물리 삭제로 적용
   async deleteBlock({ blockUserId }) {
     const result = await this.blockUsersRepository.delete({
       blockUserId,
@@ -44,7 +43,6 @@ export class BlockUserService {
     return result;
   }
 
-  // 신고
   async createReport({ reportedId }) {
     const user = await this.usersRepository.findOne({
       where: { id: reportedId },
