@@ -2,8 +2,7 @@ import { Args, Mutation, Resolver, Query, Context } from "@nestjs/graphql";
 import { PublicAccess } from "src/common/decorator/public-access";
 import { IContext } from "src/common/interfaces/context";
 import { CreateUserInput } from "./dto/create-user.dto";
-import { UpdateAllInput } from "./dto/update-all.input";
-import { UpdateUserPwdInput } from "./dto/update-user.input";
+import { UpdateUserInput } from "./dto/update-user.input";
 import { User } from "./entities/user.entity";
 import { UsersService } from "./users.service";
 
@@ -38,21 +37,12 @@ export class UsersResolver {
   }
 
   @Mutation(() => User)
-  updateUserPwd(
-    @Context() context: IContext,
-    @Args("updateUserPwdInput") updateUserPwdInput: UpdateUserPwdInput,
-  ): Promise<User> {
-    const id = context.req.user.id;
-    return this.usersService.update({ id, updateUserPwdInput });
-  }
-
-  @Mutation(() => User)
   updateUser(
     @Context() context: IContext,
-    @Args("updateAllInput") updateAllInput: UpdateAllInput,
+    @Args("updateUserInput") updateUserInput: UpdateUserInput,
   ): Promise<User> {
     const id = context.req.user.id;
-    return this.usersService.updateAll({ id, updateAllInput });
+    return this.usersService.update({ id, updateUserInput });
   }
 
   @Mutation(() => Boolean)
