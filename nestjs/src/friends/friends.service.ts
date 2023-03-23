@@ -15,27 +15,24 @@ export class FriendsService {
     private readonly usersRepository: Repository<User>,
   ) {}
 
-  findFriendOne({ opponentId }) {
-    return this.friendsRepository.findOne({ where: opponentId });
-  }
-
-  findFriendAll() {
-    return this.friendsRepository.find();
-  }
-
-  async createFriend({ userId, opponentId }) {
+  async createFriend({ opponentId, userId }) {
     const user = await this.friendsRepository.findOne({
       where: {
         user: { id: userId },
         opponentId: opponentId,
       },
     });
-    if (user) throw new NotAcceptableException();
-    return this.friendsRepository.save({
+    if (!user) new NotAcceptableException();
+
+    return await this.friendsRepository.save({
       user: { id: userId },
       opponentId,
       success: false,
     });
+  }
+
+  findFriendAll() {
+    return this.friendsRepository.find();
   }
 
   async delete({ opponentId }: IFriendsServiceDelete): Promise<boolean> {

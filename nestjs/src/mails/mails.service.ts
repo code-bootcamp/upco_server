@@ -1,6 +1,6 @@
 import { MailerService } from "@nest-modules/mailer";
 import { Injectable, NotAcceptableException } from "@nestjs/common";
-import { IUsersServiceUpdateInput } from "src/users/interfaces/user-service.interface";
+import { IUsersServiceUpdate } from "src/users/interfaces/user-service.interface";
 import { UsersService } from "src/users/users.service";
 import { IEmail } from "./interfaces/mail-service.interface";
 
@@ -22,9 +22,9 @@ export class MailService {
     // 임시 비밀번호 생성 로직 및 업데이트 로직입니다.
     const renderNewPassword = this.renderNewPassword();
 
-    const input: IUsersServiceUpdateInput = {
+    const input: IUsersServiceUpdate = {
       id: (await user).id,
-      updateUserPwdInput: {
+      updateUserInput: {
         password: renderNewPassword,
       },
     };
