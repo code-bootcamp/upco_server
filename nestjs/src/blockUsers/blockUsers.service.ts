@@ -3,6 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { User } from "src/users/entities/user.entity";
 import { Repository } from "typeorm";
 import { BlockUser } from "./entities/blockUsers.entity";
+import { IBlockUsersServiceDelete } from "./interfaces/block-service.interface";
 
 @Injectable()
 export class BlockUserService {
@@ -36,11 +37,13 @@ export class BlockUserService {
     });
   }
 
-  async deleteBlock({ blockUserId }) {
+  async deleteBlock({
+    blockUserId,
+  }: IBlockUsersServiceDelete): Promise<boolean> {
     const result = await this.blockUsersRepository.delete({
       blockUserId,
     });
-    return result;
+    return result.affected ? true : false;
   }
 
   async createReport({ reportedId }) {
