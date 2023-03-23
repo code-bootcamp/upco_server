@@ -1,5 +1,4 @@
 import { PROVIDER_ENUM } from "src/common/interfaces/provider";
-import { CreateFriendInput } from "../dto/create-friend.input";
 import { CreateUserInput } from "../dto/create-user.dto";
 import { UpdateAllInput } from "../dto/update-all.input";
 import { UpdateUserPwdInput } from "../dto/update-user.input";
