@@ -5,6 +5,7 @@ import {
   IAuthServiceGetRestoreToken,
   IAuthServiceLogin,
   IAuthServiceSetRefreshToken,
+  IAuthSocialLogin,
 } from "./interfaces/auth-service.interface";
 
 import { JwtService } from "@nestjs/jwt";
@@ -30,6 +31,20 @@ export class AuthService {
     this.setRefreshToken({ user, res });
 
     return this.getAccessToken({ user });
+  }
+
+  async socialLogin({ req, res, provider }: IAuthSocialLogin) {
+    let user = await this.usersService.findOneByEmail({
+      email: req.user.id,
+    });
+    if (!user)
+      user = await this.usersService.createOauthUser({
+        id: req.user.id,
+        nickname: "자동 생성", // 자동 생성 nickname으로 변경할까요?
+        provider,
+      });
+    this.setRefreshToken({ user, res });
+    res.redirect(process.env.ORIGIN + "/frontend/login");
   }
 
   setRefreshToken({ user, res }: IAuthServiceSetRefreshToken): void {

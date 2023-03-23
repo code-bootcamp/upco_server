@@ -1,4 +1,5 @@
 import { Field, Int, ObjectType } from "@nestjs/graphql";
+import { PROVIDER_ENUM } from "src/common/interfaces/provider";
 import {
   Column,
   CreateDateColumn,
@@ -27,7 +28,7 @@ export class User {
   // @Field(() => String)
   password: string;
 
-  @Column()
+  @Column({ type: "enum", enum: PROVIDER_ENUM, default: "credentials" })
   @Field(() => String)
   provider: string;
 
