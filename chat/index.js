@@ -15,7 +15,7 @@ app.use(cors());
 app.use(express.json());
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerJSDoc(options)));
 
-app.get("/chat", (req, res) => {
+app.get("/", (req, res) => {
   res.send("health check");
 });
 
