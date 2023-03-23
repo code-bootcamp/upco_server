@@ -2,6 +2,7 @@ import { MailerService } from "@nest-modules/mailer";
 import { Injectable, NotAcceptableException } from "@nestjs/common";
 import { IUsersServiceUpdateInput } from "src/users/interfaces/user-service.interface";
 import { UsersService } from "src/users/users.service";
+import { IEmail } from "./interfaces/mail-service.interface";
 
 @Injectable()
 export class MailService {
@@ -10,22 +11,24 @@ export class MailService {
     private readonly userService: UsersService, //
   ) {}
 
-  renderNewPassword() {
+  renderNewPassword(): string {
     return String(Math.floor(Math.random() * 1000000)).padStart(6, "0");
   }
 
-  async passwordResetMailer({ email }): Promise<string> {
+  async passwordResetMailer({ email }: IEmail): Promise<string> {
     const user = this.userService.findOneByEmail({ email });
     if (!user) throw new NotAcceptableException();
 
     // 임시 비밀번호 생성 로직 및 업데이트 로직입니다.
     const renderNewPassword = this.renderNewPassword();
+
     const input: IUsersServiceUpdateInput = {
       id: (await user).id,
       updateUserPwdInput: {
         password: renderNewPassword,
       },
     };
+
     await this.userService.update(input);
 
     // 메일 전송 로직입니다.
