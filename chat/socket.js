@@ -12,7 +12,7 @@ module.exports = (server) => {
     socket.on("server", (data) => {
       console.log(data);
 
-      socket.emit("client", "server to client");
+      socket.broadcast.emit("client", data);
     });
 
     socket.on("disconnect", () => {
