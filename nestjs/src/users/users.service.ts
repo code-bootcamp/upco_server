@@ -1,8 +1,4 @@
-import {
-  ConflictException,
-  Injectable,
-  NotAcceptableException,
-} from "@nestjs/common";
+import { ConflictException, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { User } from "./entities/user.entity";
@@ -62,14 +58,6 @@ export class UsersService {
       password: String(id),
       provider,
     });
-  }
-
-  async addFriends({ createFriendInput }) {
-    const friend = await this.usersRepository.findOne({
-      where: { id: createFriendInput.id },
-    });
-    if (friend) throw new NotAcceptableException();
-    return this.usersRepository.save({ ...createFriendInput });
   }
 
   async update({

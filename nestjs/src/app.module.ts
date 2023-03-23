@@ -11,14 +11,18 @@ import * as redisStore from "cache-manager-redis-store";
 import { MapModule } from "./maps/maps.module";
 import { BlockUserModule } from "./blockUsers/blockUsers.module";
 import { MailModule } from "./mails/mails.module";
+import { QuestionModule } from "./questions/questions.module";
+import { FriendsModule } from "./friends/friends.module";
 
 @Module({
   imports: [
+    AuthModule,
     BlockUserModule,
+    FriendsModule,
     MailModule,
     MapModule,
-    AuthModule,
     UsersModule,
+    QuestionModule,
     GraphQLModule.forRootAsync<ApolloDriverConfig>({
       driver: ApolloDriver,
       useFactory: () => ({

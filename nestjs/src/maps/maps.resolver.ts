@@ -3,6 +3,7 @@ import { IContext } from "src/common/interfaces/context";
 import { FindAroundUserInput } from "./dto/find-AroundUser.input";
 import { FindAroundUserOutput } from "./dto/find-AroundUser.output";
 import { SaveUserLocationInput } from "./dto/save-userLocation.input";
+import { IUserWithLocation } from "./interfaces/map-service.interface";
 import { MapService } from "./maps.service";
 
 @Resolver()
@@ -15,7 +16,7 @@ export class MapResolver {
   @Query(() => [FindAroundUserOutput])
   findAroundUsers(
     @Args("bothLocation") findAroundUsersInput: FindAroundUserInput, //
-  ) {
+  ): Promise<IUserWithLocation[]> {
     return this.mapService.findLocation({ findAroundUsersInput });
   }
 

@@ -24,11 +24,6 @@ export interface IUsersServiceUpdateAllInput {
   updateAllInput: UpdateAllInput;
 }
 
-export interface IUsersServiceAddFriendInput {
-  id: string;
-  createFriendInput: CreateFriendInput;
-}
-
 export interface IUsersServiceFindOneById {
   id: string;
 }

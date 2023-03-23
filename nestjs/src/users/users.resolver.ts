@@ -43,18 +43,15 @@ export class UsersResolver {
     @Args("updateUserPwdInput") updateUserPwdInput: UpdateUserPwdInput,
   ): Promise<User> {
     const id = context.req.user.id;
-    console.log("✅", id);
     return this.usersService.update({ id, updateUserPwdInput });
   }
 
-  // 회원 정보 업데이트 (age, interest, image)
   @Mutation(() => User)
   updateUser(
     @Context() context: IContext,
     @Args("updateAllInput") updateAllInput: UpdateAllInput,
   ): Promise<User> {
     const id = context.req.user.id;
-    console.log("✅", id);
     return this.usersService.updateAll({ id, updateAllInput });
   }
 
