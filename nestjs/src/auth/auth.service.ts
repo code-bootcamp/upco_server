@@ -11,6 +11,7 @@ import {
 import { JwtService } from "@nestjs/jwt";
 
 import * as bcrypt from "bcrypt";
+import getRandomNickName from "src/common/util/getRandomNickname";
 
 @Injectable()
 export class AuthService {
@@ -40,7 +41,7 @@ export class AuthService {
     if (!user)
       user = await this.usersService.createOauthUser({
         id: req.user.id,
-        nickname: "자동 생성", // 자동 생성 nickname으로 변경할까요?
+        nickname: getRandomNickName(),
         provider,
       });
     this.setRefreshToken({ user, res });
@@ -64,7 +65,7 @@ export class AuthService {
   getAccessToken({ user }: IAuthServiceGetAccessToken): string {
     return this.jwtService.sign(
       { sub: { email: user.email, id: user.id } },
-      { secret: process.env.JWT_ACCESS_KEY, expiresIn: "10s" },
+      { secret: process.env.JWT_ACCESS_KEY, expiresIn: "1h" },
     );
   }
 
