@@ -12,8 +12,7 @@ import {
   IUsersServiceFindOneByEmail,
   IUsersServiceFindOneByHash,
   IUsersServiceFindOneById,
-  IUsersServiceUpdateAllInput,
-  IUsersServiceUpdateInput,
+  IUsersServiceUpdate,
 } from "./interfaces/user-service.interface";
 
 @Injectable()
@@ -60,33 +59,17 @@ export class UsersService {
     });
   }
 
-  async update({
-    id,
-    updateUserPwdInput,
-  }: IUsersServiceUpdateInput): Promise<User> {
-    const { password, ...updateUser } = updateUserPwdInput;
+  async update({ id, updateUserInput }: IUsersServiceUpdate): Promise<User> {
+    const { password, ...updateUser } = updateUserInput;
+
     const user = await this.findOneById({ id });
+
     const pwd = await bcrypt.hash(password, 10);
 
     return this.usersRepository.save({
       ...user,
+      ...updateUser,
       password: pwd,
-      ...updateUser,
-      updateUserPwdInput,
-    });
-  }
-
-  async updateAll({
-    id,
-    updateAllInput,
-  }: IUsersServiceUpdateAllInput): Promise<User> {
-    const { ...updateUser } = updateAllInput;
-    const user = await this.findOneById({ id });
-
-    return this.usersRepository.save({
-      ...user,
-      ...updateUser,
-      updateAllInput,
     });
   }
 
