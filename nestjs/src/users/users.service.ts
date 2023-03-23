@@ -9,6 +9,7 @@ import { User } from "./entities/user.entity";
 
 import * as bcrypt from "bcrypt";
 import {
+  IUserServiceCreateOauthUser,
   IUsersServiceCreate,
   IUsersServiceDelete,
   IUsersServiceFindLogin,
@@ -47,7 +48,19 @@ export class UsersService {
       email,
       password: hashedPassword,
       nickname,
-      provider: "credentials",
+    });
+  }
+
+  async createOauthUser({
+    id,
+    nickname,
+    provider,
+  }: IUserServiceCreateOauthUser): Promise<User> {
+    return this.usersRepository.save({
+      nickname,
+      email: id,
+      password: String(id),
+      provider,
     });
   }
 
