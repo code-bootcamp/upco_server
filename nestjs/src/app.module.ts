@@ -13,12 +13,14 @@ import { BlockUserModule } from "./blockUsers/blockUsers.module";
 import { MailModule } from "./mails/mails.module";
 import { QuestionModule } from "./questions/questions.module";
 import { FriendsModule } from "./friends/friends.module";
+import { FilesModule } from "./files/files.module";
 
 @Module({
   imports: [
     AuthModule,
     BlockUserModule,
     FriendsModule,
+    FilesModule,
     MailModule,
     MapModule,
     UsersModule,
@@ -32,6 +34,7 @@ import { FriendsModule } from "./friends/friends.module";
           origin: process.env.ORIGIN,
           credentials: true,
         },
+        uploads: false,
       }),
     }),
     TypeOrmModule.forRoot({
