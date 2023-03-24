@@ -60,15 +60,21 @@ export class UsersService {
   }
 
   async update({ id, updateUserInput }: IUsersServiceUpdate): Promise<User> {
-    const { password, ...updateUser } = updateUserInput;
+    const user = await this.findOneById({ id });
 
+    return this.usersRepository.save({
+      ...user,
+      ...updateUserInput,
+    });
+  }
+
+  async updatePassword({ id, password }): Promise<User> {
     const user = await this.findOneById({ id });
 
     const pwd = await bcrypt.hash(password, 10);
 
     return this.usersRepository.save({
       ...user,
-      ...updateUser,
       password: pwd,
     });
   }
