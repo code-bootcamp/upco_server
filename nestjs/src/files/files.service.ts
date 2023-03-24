@@ -1,17 +1,12 @@
 import { Storage } from "@google-cloud/storage";
 import { Injectable, NotAcceptableException } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { User } from "src/users/entities/user.entity";
 import { IUsersServiceUpdate } from "src/users/interfaces/user-service.interface";
 import { UsersService } from "src/users/users.service";
-import { Repository } from "typeorm";
 import { IFilesServiceUpload } from "./interfaces/files-service.interface";
 
 @Injectable()
 export class FilesService {
   constructor(
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>, //
     private readonly userService: UsersService, //
   ) {}
 
@@ -26,13 +21,10 @@ export class FilesService {
     try {
       // 이미지를 버킷에 저장하는 로직입니다.
       file.createReadStream().pipe(storage.file(url).createWriteStream());
-      const user = await this.userService.findOneById({ id });
-
       // 이미지 URL을 유저 DB에 저장하는 로직입니다.
       const input: IUsersServiceUpdate = {
         id,
         updateUserInput: {
-          ...user,
           image: url,
         },
       };
