@@ -21,7 +21,7 @@ app.get("/", (req, res) => {
 
 async function start() {
   try {
-    await mongoose.connect("mongodb://mongodb:27017/chat");
+    await mongoose.connect(process.env.MONGODB_CONNECTION);
     server.listen(4000);
   } catch (error) {
     console.log(error);
