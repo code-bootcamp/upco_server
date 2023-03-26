@@ -1,20 +1,15 @@
 import { Module } from "@nestjs/common";
-import { TypeOrmModule } from "@nestjs/typeorm";
-import { User } from "src/users/entities/user.entity";
-import { UsersService } from "src/users/users.service";
+import { UsersModule } from "src/users/users.module";
 import { MapResolver } from "./maps.resolver";
 import { MapService } from "./maps.service";
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([
-      User, //
-    ]),
+    UsersModule, //
   ],
   providers: [
     MapResolver, //
     MapService, //
-    UsersService, //
   ],
 })
 export class MapModule {}

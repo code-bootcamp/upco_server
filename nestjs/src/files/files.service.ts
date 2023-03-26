@@ -1,13 +1,37 @@
-import { Injectable } from "@nestjs/common";
+import { Storage } from "@google-cloud/storage";
+import { Injectable, NotAcceptableException } from "@nestjs/common";
+import { IUsersServiceUpdate } from "src/users/interfaces/user-service.interface";
+import { UsersService } from "src/users/users.service";
 import { IFilesServiceUpload } from "./interfaces/files-service.interface";
 
 @Injectable()
 export class FilesService {
-  upload({ files }: IFilesServiceUpload): string {
-    const a = files;
+  constructor(
+    private readonly userService: UsersService, //
+  ) {}
 
-    console.log(a);
+  async upload({ id, file }: IFilesServiceUpload): Promise<string> {
+    const storage = new Storage({
+      projectId: process.env.GCP_STORAGE_ID,
+      keyFilename: process.env.GCP_STORAGE_KEYFILE,
+    }).bucket(process.env.GCP_STORAGE_BUCKET);
 
-    return "hi";
+    const url = `${id}.${file.filename.split(".").at(-1)}`;
+
+    try {
+      // 이미지를 버킷에 저장하는 로직입니다.
+      file.createReadStream().pipe(storage.file(url).createWriteStream());
+      // 이미지 URL을 유저 DB에 저장하는 로직입니다.
+      const input: IUsersServiceUpdate = {
+        id,
+        updateUserInput: {
+          image: url,
+        },
+      };
+      await this.userService.update(input);
+      return url;
+    } catch (error) {
+      throw new NotAcceptableException();
+    }
   }
 }
