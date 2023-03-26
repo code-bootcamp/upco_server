@@ -2,6 +2,7 @@ import { Field, ObjectType } from "@nestjs/graphql";
 import { User } from "src/users/entities/user.entity";
 import {
   Column,
+  CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
@@ -24,7 +25,11 @@ export class Friend {
   @Field(() => User)
   user: User;
 
-  @Column()
+  @Column({ default: false })
   @Field(() => Boolean)
-  success: boolean;
+  isSuccess: boolean;
+
+  @CreateDateColumn()
+  @Field(() => Date)
+  createAt: Date;
 }
