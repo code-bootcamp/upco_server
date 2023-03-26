@@ -7,7 +7,8 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const reflector = app.get(Reflector);
   app.enableCors({
-    origin: process.env.ORIGIN,
+    // origin: process.env.ORIGIN,
+    origin: "*",
     credentials: true,
   });
   app.useGlobalGuards(new GqlAuthAccessGuard(reflector));

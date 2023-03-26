@@ -31,7 +31,8 @@ import { FilesModule } from "./files/files.module";
         autoSchemaFile: true,
         context: ({ req, res }) => ({ req, res }),
         cors: {
-          origin: process.env.ORIGIN,
+          // origin: process.env.ORIGIN,
+          origin: "*",
           credentials: true,
         },
         uploads: false,
