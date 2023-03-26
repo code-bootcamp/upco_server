@@ -8,10 +8,11 @@ export class FriendsResolver {
 
   @Mutation(() => Friend)
   addFriend(
+    @Args("isSuccess") isSuccess: boolean,
     @Args("userId") userId: string,
     @Args("opponentId") opponentId: string,
-  ) {
-    return this.friendsService.createFriend({ userId, opponentId });
+  ): Promise<void> {
+    return this.friendsService.test({ userId, opponentId, isSuccess });
   }
 
   @Query(() => [Friend])

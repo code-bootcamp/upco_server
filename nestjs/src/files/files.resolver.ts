@@ -1,6 +1,6 @@
-import { Args, Mutation, Resolver } from "@nestjs/graphql";
+import { Args, Context, Mutation, Resolver } from "@nestjs/graphql";
 import { FileUpload, GraphQLUpload } from "graphql-upload";
-import { PublicAccess } from "src/common/decorator/public-access";
+import { IContext } from "src/common/interfaces/context";
 import { FilesService } from "./files.service";
 
 @Resolver()
@@ -9,11 +9,12 @@ export class FilesResolver {
     private readonly filesService: FilesService, //
   ) {}
 
-  @PublicAccess()
   @Mutation(() => String)
   uploadFile(
-    @Args({ name: "files", type: () => [GraphQLUpload] }) files: FileUpload[],
-  ): string {
-    return this.filesService.upload({ files });
+    @Context() context: IContext, //
+    @Args({ name: "file", type: () => GraphQLUpload }) file: FileUpload,
+  ): Promise<string> {
+    const id = context.req.user.id;
+    return this.filesService.upload({ id, file });
   }
 }
