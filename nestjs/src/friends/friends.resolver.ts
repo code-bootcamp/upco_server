@@ -11,8 +11,8 @@ export class FriendsResolver {
     @Args("isSuccess") isSuccess: boolean,
     @Args("userId") userId: string,
     @Args("opponentId") opponentId: string,
-  ): Promise<void> {
-    return this.friendsService.test({ userId, opponentId, isSuccess });
+  ) {
+    return this.friendsService.createFriend({ userId, opponentId, isSuccess });
   }
 
   @Query(() => [Friend])

@@ -1,10 +1,13 @@
 import { Field, Int, ObjectType } from "@nestjs/graphql";
 import { PROVIDER_ENUM } from "src/common/interfaces/provider";
+import { Interest } from "src/interests/entities/interest.entity";
 import {
   Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  JoinTable,
+  ManyToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
@@ -36,10 +39,6 @@ export class User {
   @Field(() => Int)
   age: number;
 
-  @Column({ nullable: true })
-  @Field(() => String)
-  interest: string;
-
   @Column({ default: 0 })
   @Field(() => Int, { nullable: true })
   reported: number;
@@ -60,5 +59,10 @@ export class User {
 
   @DeleteDateColumn()
   @Field(() => Date)
-  deletedAt: Date;
+  deleteAt: Date;
+
+  @JoinTable()
+  @ManyToMany(() => Interest, (interests) => interests.users)
+  @Field(() => [Interest])
+  interests: Interest[];
 }

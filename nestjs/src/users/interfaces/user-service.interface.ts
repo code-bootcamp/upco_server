@@ -1,6 +1,7 @@
 import { PROVIDER_ENUM } from "src/common/interfaces/provider";
 import { CreateUserInput } from "../dto/create-user.dto";
-import { UpdateUserInput } from "../dto/update-user.input";
+import { UpdateUserBulkInsertInput } from "../dto/update-user-bulk-insert.dto";
+import { UpdateUserInput } from "../dto/update-user.dto";
 
 export interface IUsersServiceCreate {
   createUserInput: CreateUserInput;
@@ -15,6 +16,11 @@ export interface IUserServiceCreateOauthUser {
 export interface IUsersServiceUpdate {
   id: string;
   updateUserInput: UpdateUserInput;
+}
+
+export interface IUsersServiceBulkInsertUpdate {
+  id: string;
+  updateUserBulkInsertInput: UpdateUserBulkInsertInput;
 }
 
 export interface IUsersServiceFindOneById {
