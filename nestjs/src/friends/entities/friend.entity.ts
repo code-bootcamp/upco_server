@@ -22,7 +22,7 @@ export class Friend {
 
   @JoinColumn()
   @ManyToOne(() => User)
-  @Field(() => User)
+  //@Field(() => User)
   user: User;
 
   @Column({ default: false })
@@ -30,6 +30,6 @@ export class Friend {
   isSuccess: boolean;
 
   @CreateDateColumn()
-  @Field(() => Date)
+  //@Field(() => Date)
   createAt: Date;
 }
