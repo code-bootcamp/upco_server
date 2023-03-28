@@ -16,16 +16,15 @@
  *              schema:
  *                  type: array
  *                  items:
- *                      properties:
- *                          number:
- *                              type: int
- *                              example: 3
- *
+ *                    properties:
+ *                      chatMember:
+ *                          type: array
+ *                          example: [], []
  */
 
 /**
  * @swagger
- * /chat:
+ * /chatRoom:
  *   post:
  *     summary: 채팅방 만들기
  *     tags: [ChatRoom]

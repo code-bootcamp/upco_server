@@ -2,11 +2,9 @@ const mongoose = require("mongoose");
 
 const ChatSchema = new mongoose.Schema(
   {
-    members: {
+    chatMembers: {
       type: Array,
     },
-  },
-  {
     createdAt: {
       type: Date,
       default: Date.now,
