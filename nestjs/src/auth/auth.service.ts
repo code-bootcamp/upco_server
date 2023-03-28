@@ -54,12 +54,12 @@ export class AuthService {
       { secret: process.env.JWT_REFRESH_KEY, expiresIn: "2w" },
     );
 
-    res.setHeader(
-      "Set-Cookie",
-      `refreshToken=${refreshToken}; path=/; domain=.api.upco.space; SameSite=None; Secure; httpOnly`,
-    );
-    res.setHeader("Access-Control-Allow-Origin", process.env.ORIGIN);
-    res.setHeader("Access-Control-Allow-Credentials", "true");
+    // res.setHeader(
+    //   "Set-Cookie",
+    //   `refreshToken=${refreshToken}; path=/; domain=.api.upco.space; SameSite=None; Secure; httpOnly`,
+    // );
+    // res.setHeader("Access-Control-Allow-Origin", process.env.ORIGIN);
+    // res.setHeader("Access-Control-Allow-Credentials", "true");
   }
 
   getAccessToken({ user }: IAuthServiceGetAccessToken): string {
