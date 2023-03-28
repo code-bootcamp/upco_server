@@ -13,11 +13,11 @@ import {
 @ObjectType()
 export class Friend {
   @PrimaryGeneratedColumn("uuid")
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   id: string;
 
   @Column()
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   opponentId: string;
 
   @JoinColumn()
@@ -26,7 +26,7 @@ export class Friend {
   user: User;
 
   @Column({ default: false })
-  @Field(() => Boolean)
+  @Field(() => Boolean, { nullable: true })
   isSuccess: boolean;
 
   @CreateDateColumn()
