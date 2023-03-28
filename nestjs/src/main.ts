@@ -11,7 +11,7 @@ async function bootstrap() {
     origin: "*",
     credentials: true,
   });
-  app.useGlobalGuards(new GqlAuthAccessGuard(reflector));
+  // app.useGlobalGuards(new GqlAuthAccessGuard(reflector));
   app.use(graphqlUploadExpress({}));
   await app.listen(3000);
 }
