@@ -16,7 +16,8 @@ export class FriendsService {
   ) {}
 
   async createFriend({ opponentId, userId, isSuccess }) {
-    if (opponentId === userId) throw new NotAcceptableException();
+    if (opponentId === userId)
+      throw new NotAcceptableException("같은 ID는 친구로 추가할 수 없습니다.");
 
     const user = await this.usersRepository.findOne({
       where: { id: userId },
@@ -57,7 +58,7 @@ export class FriendsService {
       });
     }
 
-    return "true";
+    return;
   }
 
   findFriendAll() {

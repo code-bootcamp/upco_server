@@ -2,7 +2,7 @@ import { Args, Mutation, Resolver, Query, Context } from "@nestjs/graphql";
 import { PublicAccess } from "src/common/decorator/public-access";
 import { IContext } from "src/common/interfaces/context";
 import { CreateUserInput } from "./dto/create-user.dto";
-import { UpdateUserBulkInsertInput } from "./dto/update-user-bulk-insert.dto";
+import { UpdateUserInput } from "./dto/update-user.dto";
 //import { UpdateUserInput } from "./dto/update-user.dto";
 import { User } from "./entities/user.entity";
 import { UsersService } from "./users.service";
@@ -40,11 +40,11 @@ export class UsersResolver {
   @Mutation(() => User)
   updateUser(
     @Context() context: IContext,
-    @Args("updateUserBulkInsertInput")
-    updateUserBulkInsertInput: UpdateUserBulkInsertInput,
+    @Args("updateUserInput")
+    updateUserInput: UpdateUserInput,
   ): Promise<User> {
     const id = context.req.user.id;
-    return this.usersService.update({ id, updateUserBulkInsertInput });
+    return this.usersService.update({ id, updateUserInput });
   }
 
   @Mutation(() => User)

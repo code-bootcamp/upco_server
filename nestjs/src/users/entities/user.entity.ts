@@ -1,13 +1,10 @@
 import { Field, Int, ObjectType } from "@nestjs/graphql";
 import { PROVIDER_ENUM } from "src/common/interfaces/provider";
-import { Interest } from "src/interests/entities/interest.entity";
 import {
   Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
-  JoinTable,
-  ManyToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
@@ -36,33 +33,32 @@ export class User {
   provider: string;
 
   @Column({ nullable: true })
-  @Field(() => Int)
-  age: number;
+  @Field(() => Int, { nullable: true })
+  age?: number;
+
+  @Column({ nullable: true })
+  @Field(() => String, { nullable: true })
+  interest?: string;
 
   @Column({ default: 0 })
   @Field(() => Int, { nullable: true })
   reported: number;
 
   @Column({ nullable: true })
-  @Field(() => String)
-  image: string;
+  @Field(() => String, { nullable: true })
+  image?: string;
 
   // =====================
 
   @CreateDateColumn()
-  @Field(() => Date)
-  createAt: Date;
+  @Field(() => Date, { nullable: true })
+  createAt?: Date;
 
   @UpdateDateColumn()
-  @Field(() => Date)
-  updateAt: Date;
+  @Field(() => Date, { nullable: true })
+  updateAt?: Date;
 
   @DeleteDateColumn()
-  @Field(() => Date)
-  deleteAt: Date;
-
-  @JoinTable()
-  @ManyToMany(() => Interest, (interests) => interests.users)
-  @Field(() => [Interest])
-  interests: Interest[];
+  //@Field(() => Date, { nullable: true })
+  deleteAt?: Date;
 }

@@ -1,6 +1,6 @@
 import { Storage } from "@google-cloud/storage";
 import { Injectable, NotAcceptableException } from "@nestjs/common";
-import { IUsersServiceBulkInsertUpdate } from "src/users/interfaces/user-service.interface";
+import { IUsersServiceUpdate } from "src/users/interfaces/user-service.interface";
 import { UsersService } from "src/users/users.service";
 import { IFilesServiceUpload } from "./interfaces/files-service.interface";
 
@@ -22,9 +22,9 @@ export class FilesService {
       // 이미지를 버킷에 저장하는 로직입니다.
       file.createReadStream().pipe(storage.file(url).createWriteStream());
       // 이미지 URL을 유저 DB에 저장하는 로직입니다.
-      const input: IUsersServiceBulkInsertUpdate = {
+      const input: IUsersServiceUpdate = {
         id,
-        updateUserBulkInsertInput: {
+        updateUserInput: {
           image: url,
         },
       };
