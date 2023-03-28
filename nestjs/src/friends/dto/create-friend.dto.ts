@@ -3,12 +3,12 @@ import { User } from "src/users/entities/user.entity";
 
 @InputType()
 export class CreateFriendInput {
-  @Field(() => String)
-  opponentId: string;
+  @Field(() => User)
+  opponentId?: User;
 
   @Field(() => User)
-  userId: User;
+  userId?: User;
 
   @Field(() => Boolean)
-  isSuccess: boolean;
+  isSuccess?: boolean;
 }

@@ -6,26 +6,21 @@ import { User } from "./entities/user.entity";
 import * as bcrypt from "bcrypt";
 import {
   IUserServiceCreateOauthUser,
-  IUsersServiceBulkInsertUpdate,
   IUsersServiceCreate,
   IUsersServiceDelete,
   IUsersServiceFindLogin,
   IUsersServiceFindOneByEmail,
   IUsersServiceFindOneByHash,
   IUsersServiceFindOneById,
+  IUsersServiceUpdate,
 } from "./interfaces/user-service.interface";
-import { InterestsService } from "src/interests/interests.service";
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
-
-    private readonly interestsService: InterestsService,
   ) {}
-
-  // findOneByIdWithInterest 추가하기
 
   async findOneById({ id }: IUsersServiceFindOneById): Promise<User> {
     return this.usersRepository.findOne({ where: { id } });
@@ -64,36 +59,15 @@ export class UsersService {
     });
   }
 
-  // interest(관심사) 내용 추가
-  async update({
-    id,
-    updateUserBulkInsertInput,
-  }: IUsersServiceBulkInsertUpdate): Promise<User> {
-    const { interests, ...user } = updateUserBulkInsertInput;
+  async update({ id, updateUserInput }: IUsersServiceUpdate): Promise<User> {
+    const user = await this.findOneById({ id });
 
-    const result = await this.findOneById({ id });
-    const tagNames = await this.interestsService.findByNames({ interests });
-
-    const temp = [];
-    interests.forEach((el) => {
-      const exists = tagNames.find((prevEl) => el === prevEl.name);
-      if (!exists) temp.push({ name: el });
-    });
-
-    const newInterests = await this.interestsService.bulkInsert({
-      names: temp,
-    });
-
-    const tags = [...tagNames, ...newInterests.identifiers];
-
-    const result2 = await this.usersRepository.save({
+    const result = await this.usersRepository.save({
       ...user,
-      ...result,
-      ...updateUserBulkInsertInput,
-      interests: tags,
+      ...updateUserInput,
     });
 
-    return result2;
+    return result;
   }
 
   async updatePassword({ id, password }): Promise<User> {
