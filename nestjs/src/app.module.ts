@@ -14,6 +14,7 @@ import { MailModule } from "./mails/mails.module";
 import { QuestionModule } from "./questions/questions.module";
 import { FriendsModule } from "./friends/friends.module";
 import { FilesModule } from "./files/files.module";
+import { NoticesModule } from "./notices/notice.module";
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { FilesModule } from "./files/files.module";
     FilesModule,
     MailModule,
     MapModule,
+    NoticesModule,
     UsersModule,
     QuestionModule,
     GraphQLModule.forRootAsync<ApolloDriverConfig>({

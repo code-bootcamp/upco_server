@@ -1,5 +1,8 @@
 const express = require("express");
-const { addMessage, getMessages } = require("../controllers/MessageController.js");
+const {
+  addMessage,
+  getMessages,
+} = require("../controllers/MessageController.js");
 
 const router = express.Router();
 
