@@ -65,7 +65,7 @@ export class AuthService {
   getAccessToken({ user }: IAuthServiceGetAccessToken): string {
     return this.jwtService.sign(
       { sub: { email: user.email, id: user.id } },
-      { secret: process.env.JWT_ACCESS_KEY, expiresIn: "1h" },
+      { secret: process.env.JWT_ACCESS_KEY, expiresIn: "10s" },
     );
   }
 
