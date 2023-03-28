@@ -11,6 +11,7 @@ export interface IBothLocation {
   lng2: number;
 }
 export interface IFindAroundUsersInput {
+  interest: string | null;
   findAroundUsersInput: FindAroundUserInput;
 }
 
@@ -18,6 +19,7 @@ export interface IFindAroundUsersOutput {
   findAroundUsersOutput: FindAroundUserOutput;
 }
 export interface IGetUsersInfo {
+  interest: string | null;
   userIds: string[];
   locationByUsers: IlocationByUser;
 }
@@ -36,4 +38,8 @@ export interface IUserWithLocation extends User {
 export interface ILocation {
   lat: number;
   lng: number;
+}
+
+export interface IIsValidInterest {
+  interest: string | null;
 }

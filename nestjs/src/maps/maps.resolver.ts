@@ -15,9 +15,10 @@ export class MapResolver {
   // GraphQL return 값, typescript 추가할 예정입니다.
   @Query(() => [FindAroundUserOutput])
   findAroundUsers(
+    @Args("interest", { nullable: true }) interest: string = null, //
     @Args("bothLocation") findAroundUsersInput: FindAroundUserInput, //
   ): Promise<IUserWithLocation[]> {
-    return this.mapService.findLocation({ findAroundUsersInput });
+    return this.mapService.findLocation({ interest, findAroundUsersInput });
   }
 
   @Mutation(() => String)
