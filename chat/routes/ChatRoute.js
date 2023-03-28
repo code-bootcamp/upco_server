@@ -7,6 +7,7 @@ const {
 
 const router = express.Router();
 
+
 router.get("/", createChatRoom);
 router.post("/", createChatRoom);
 router.get('/:userId', userChats);
