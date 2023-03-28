@@ -30,6 +30,13 @@ export class UsersResolver {
   }
 
   @Query(() => User)
+  fetchUser(
+    @Args("id") id: string, //
+  ): Promise<User> {
+    return this.usersService.findOneById({ id });
+  }
+
+  @Query(() => User)
   fetchLoginUser(
     @Context() context: IContext, //
   ): Promise<User> {
