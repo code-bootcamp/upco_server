@@ -6,7 +6,7 @@ export class UpdateUserInput extends PartialType(
   OmitType(User, [
     "id",
     "createAt",
-    "deletedAt",
+    "deleteAt",
     "updateAt",
     "provider",
     "email",
