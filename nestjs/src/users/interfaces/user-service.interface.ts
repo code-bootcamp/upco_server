@@ -25,7 +25,7 @@ export interface IUsersServiceFindOneByEmail {
   email: string;
 }
 
-export interface IUsersServiceFindOneByHash {
+export interface IUsersServiceGetHashedPwd {
   password: string;
 }
 

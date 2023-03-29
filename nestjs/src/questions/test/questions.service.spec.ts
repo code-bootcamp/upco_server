@@ -1,122 +1,170 @@
-// import { Test, TestingModule } from "@nestjs/testing";
-// import { getRepositoryToken } from "@nestjs/typeorm";
-// import { User } from "../../users/entities/user.entity";
-// import { UsersModule } from "../../users/users.module";
-// import { UsersService } from "../../users/users.service";
-// import { Question } from "../entities/question.entity";
-// import { QuestionModule } from "../questions.module";
-// import { QuestionService } from "../questions.service";
-// import { IProvider } from "../../common/interfaces/provider";
+import { NotAcceptableException } from "@nestjs/common";
+import { Test, TestingModule } from "@nestjs/testing";
+import { getRepositoryToken } from "@nestjs/typeorm";
+import { UsersService } from "../../users/users.service";
+import { Question } from ".././entities/question.entity";
+import { QuestionService } from "../questions.service";
+import { v4 as uuidv4 } from "uuid";
+import { ObjectType } from "@nestjs/graphql";
+import {
+  ICreateQuestionServiceInput,
+  IFetchQuestionsInput,
+} from "../interfaces/question-service.interface";
 
-// class MockQuestionRepository {
-//   dataBase = [
-//     {
-//       user: { id: "user1" },
-//       title: "title1",
-//       contents: "contents1",
-//       createAt: new Date(),
-//     },
-//     {
-//       user: { id: "user1" },
-//       title: "title2",
-//       contents: "contents2",
-//       createAt: new Date(),
-//     },
-//   ];
+@ObjectType()
+class MockQuestion {
+  id: string;
+  title: string;
+  user: string;
+  contents: string;
+  createAt: Date;
+}
+class MockQuestionRepository {
+  database = [
+    {
+      id: "question1",
+      title: "title1",
+      user: "user1",
+      contents: "contents1",
+      createAt: new Date(),
+    },
+    {
+      id: "question2",
+      title: "title2",
+      user: "user1",
+      contents: "contents2",
+      createAt: new Date(),
+    },
+    {
+      id: "question3",
+      title: "title3",
+      user: "user2",
+      contents: "contents3",
+      createAt: new Date(),
+    },
+  ];
 
-//   async find({ where }: { where: { user: { id: string } } }) {
-//     const {
-//       user: { id },
-//     } = where;
-//     return this.dataBase.filter((q) => q.user.id === id);
-//   }
+  find({ id }: IFetchQuestionsInput): MockQuestion[] {
+    return this.database.filter((question) => question.user === id);
+  }
 
-//   save({ user: { id }, title, contents }) {
-//     this.dataBase.push({
-//       user: { id },
-//       title,
-//       contents,
-//       createAt: new Date(),
-//     });
-//   }
-// }
-// class MockUserRepository {
-//   dataBase = [
-//     {
-//       id: "user1",
-//       nickname: "nick1",
-//       email: "email1",
-//       password: "password1",
-//       provider: "provider1",
-//       age: 0,
-//       interest: "interest1",
-//       reported: 0,
-//       image: "image",
-//       createAt: new Date(),
-//       updateAt: new Date(),
-//       deletedAt: new Date(),
-//     },
-//   ];
-// }
+  save({ id, createQuestionInput }: ICreateQuestionServiceInput) {
+    const newQuestion = new MockQuestion();
+    const { title, contents } = createQuestionInput;
+    newQuestion.id = uuidv4();
+    newQuestion.user = id;
+    newQuestion.title = title;
+    newQuestion.contents = contents;
+    newQuestion.createAt = new Date();
 
-// describe("questionService", () => {
-//   let questionService: QuestionService;
-//   let userService: UsersService;
+    this.database.push(newQuestion);
 
-//   beforeEach(async () => {
-//     const questionModule: TestingModule = await Test.createTestingModule({
-//       imports: [
-//         QuestionModule, //
-//         UsersModule, //
-//       ],
-//       providers: [
-//         QuestionService, //
-//         {
-//           provide: getRepositoryToken(Question),
-//           useClass: MockQuestionRepository,
-//         }, //
-//       ],
-//     }).compile();
+    return newQuestion;
+  }
+}
+describe("QuestionService", () => {
+  let questionService: QuestionService;
+  let userService: UsersService;
 
-//     questionService = questionModule.get<QuestionService>(QuestionService);
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        QuestionService,
+        {
+          provide: getRepositoryToken(Question),
+          useClass: MockQuestionRepository,
+        },
+        {
+          provide: UsersService,
+          useValue: {
+            findOneById: jest.fn(),
+          },
+        },
+      ],
+    }).compile();
 
-//     const usersModule: TestingModule = await Test.createTestingModule({
-//       imports: [
-//         UsersModule, //
-//       ],
-//       providers: [
-//         UsersService,
-//         {
-//           provide: getRepositoryToken(User),
-//           useClass: MockUserRepository,
-//         },
-//       ],
-//     }).compile();
+    questionService = module.get<QuestionService>(QuestionService);
+    userService = module.get<UsersService>(UsersService);
+  });
 
-//     userService = usersModule.get<UsersService>(UsersService);
-//   });
+  afterEach(() => {
+    jest.resetAllMocks();
+  });
 
-//   describe("createQuestion", () => {
-//     it("createQuestion 생성 검증", () => {
-//       const testData = {
-//         id: "user1",
-//         createQuestionInput: {
-//           title: "testTitle",
-//           contents: "testContents",
-//         },
-//       };
+  describe("createQuestion", () => {
+    it("createQuestion 실행 시 정상적으로 저장되어야 함", () => {
+      const mockQuestionRepository = new MockQuestionRepository();
+      const id = "user1";
+      const createQuestionInput = {
+        title: "testTitle",
+        contents: "testContents",
+      };
 
-//       const resultData = {
-//         id: "user1",
-//         title: "testTitle",
-//         contents: "testContents",
-//         createAt: new Date(),
-//       };
+      const result = mockQuestionRepository.save({
+        id,
+        createQuestionInput,
+      });
 
-//       // const result = questionService.createQuestion({ ...testData });
-//       // expect(result).toEqual(resultData);
-//       const data = 1;
-//       expect(data).toBe(1);
-//     });
-//   });
-// });
+      expect(result).toEqual({
+        id: expect.any(String),
+        user: "user1",
+        title: "testTitle",
+        contents: "testContents",
+        createAt: expect.any(Date),
+      });
+    });
+
+    it("id가 존재하지 않을 시 error 반환해야 함", () => {
+      const id = "isNotExistId";
+      try {
+        userService.findOneById({ id });
+      } catch (error) {
+        expect(error).toBeInstanceOf(NotAcceptableException);
+      }
+    });
+
+    it("checkEmpty 함수 전체 공백 시 error 반환해야 함", () => {
+      const title = "   ";
+      try {
+        questionService.checkEmpty(title);
+        fail("예외 미발생 시 fail");
+      } catch (error) {
+        expect(error).toBeInstanceOf(NotAcceptableException);
+      }
+    });
+
+    it("checkEmpty 함수 맨 앞 공백 시 error 반환해야 함", () => {
+      const title = " a";
+      try {
+        questionService.checkEmpty(title);
+        fail("예외 미발생 시 fail");
+      } catch (error) {
+        expect(error).toBeInstanceOf(NotAcceptableException);
+      }
+    });
+
+    it("checkEmpty 함수 맨 뒤 공백 시 error 반환해야 함", () => {
+      const content = "a   ";
+      try {
+        questionService.checkEmpty(content);
+        fail("예외 미발생 시 fail");
+      } catch (error) {
+        expect(error).toBeInstanceOf(NotAcceptableException);
+      }
+    });
+  });
+
+  describe("fetchQuestion", () => {
+    it("fetchQuestion 함수 실행 시 id에 해당하는 데이터 가져와야 함", () => {
+      const id = "user1";
+      const mockQuestionRepository = new MockQuestionRepository();
+      const result = mockQuestionRepository.find({ id });
+
+      expect(result).toEqual(
+        mockQuestionRepository.database.filter(
+          (question) => question.user === id,
+        ),
+      );
+    });
+  });
+});

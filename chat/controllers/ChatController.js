@@ -15,6 +15,7 @@ exports.createChatRoom = async (req, res) => {
 exports.userChats = async (req, res) => {
   try {
     const chat = await ChatModel.find({
+      roomId,
       chatMembers: { $in: [req.params.userId] },
     });
     res.status(200).send(chat);
