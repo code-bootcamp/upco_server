@@ -36,10 +36,12 @@ export class BlockUserResolver {
 
   @Mutation(() => User)
   async reportOpponent(
+    @Args("userId") userId: string,
     @Args("reportedId") reportedId: string, //
   ) {
     return this.blockUsersService.createReport({
       reportedId,
+      userId,
     });
   }
 }

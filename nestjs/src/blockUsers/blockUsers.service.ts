@@ -6,6 +6,7 @@ import { BlockUser } from "./entities/blockUsers.entity";
 import {
   IBlockUsersServiceCreate,
   IBlockUsersServiceDelete,
+  IReportUsersServiceCreate,
 } from "./interfaces/block-service.interface";
 
 @Injectable()
@@ -69,17 +70,38 @@ export class BlockUserService {
     return result.affected ? true : false;
   }
 
-  async createReport({ reportedId }) {
-    const user = await this.usersRepository.findOne({
+  async createReport({
+    reportedId,
+    userId,
+  }: IReportUsersServiceCreate): Promise<string> {
+    if (reportedId === userId)
+      throw new NotAcceptableException("동일한 ID는 차단 대상이 아닙니다.");
+
+    const user = await this.usersRepository.findOne({ where: { id: userId } });
+    if (!user) throw new NotAcceptableException("존재하지 않은 유저");
+
+    const reportedUser = await this.usersRepository.findOne({
       where: { id: reportedId },
     });
+    if (!reportedUser) throw new NotAcceptableException("존재하지 않은 상대방");
+
+    const reported = await this.blockUsersRepository.findOne({
+      where: { reportedId },
+    });
+
+    if (reported) {
+      throw new NotAcceptableException("이미 신고된 ID 입니다.");
+    }
 
     await this.usersRepository.update(
       { id: reportedId },
-      { reported: user.reported + 1 },
+      { reported: reportedUser.reported + 1 },
     );
-    return this.blockUsersRepository.save({
+    await this.blockUsersRepository.save({
       reportedId,
+      user: { id: userId },
     });
+
+    return "신고가 완료되었습니다.";
   }
 }
