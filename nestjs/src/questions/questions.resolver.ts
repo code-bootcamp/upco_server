@@ -10,6 +10,15 @@ export class QuestionResolver {
     private readonly questionService: QuestionService, //
   ) {}
 
+  @Query(() => Question)
+  fetchQuestion(
+    @Context() context: IContext, //
+    @Args("questionId") questionId: string, //
+  ): Promise<Question> {
+    const id = context.req.user.id;
+    return this.questionService.fetchQuestion({ id, questionId });
+  }
+
   @Query(() => [Question])
   fetchQuestions(
     @Context() context: IContext, //
@@ -25,5 +34,14 @@ export class QuestionResolver {
   ) {
     const id = context.req.user.id;
     return this.questionService.createQuestion({ id, createQuestionInput });
+  }
+
+  @Mutation(() => Boolean)
+  deleteQuestion(
+    @Context() context: IContext, //
+    @Args("questionId") questionId: string, //
+  ): Promise<boolean> {
+    const id = context.req.user.id;
+    return this.questionService.deleteQuestion({ id, questionId });
   }
 }
