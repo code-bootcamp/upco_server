@@ -29,7 +29,7 @@ export class BlockUserResolver {
     return this.blockUsersService.createBlock({ userId, blockUserId });
   }
 
-  @Mutation(() => Boolean)
+  @Mutation(() => BlockUser)
   unblockOpponent(@Args("blockUserId") blockUserId: string): Promise<boolean> {
     return this.blockUsersService.deleteBlock({ blockUserId });
   }
