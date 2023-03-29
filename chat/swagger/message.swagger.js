@@ -14,9 +14,12 @@
  *         content:
  *           application/json:
  *              schema:
- *                type: array
+ *                type: 
  *                  items:
  *                    properties:
+ *                      number:
+ *                        type: int
+ *                        example: 1
  *                      chatRoomId:
  *                        type: string
  *                        example: 채팅방 아이디
