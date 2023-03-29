@@ -1,21 +1,31 @@
 import { MailerService } from "@nest-modules/mailer";
-import { Injectable, NotAcceptableException } from "@nestjs/common";
+import {
+  CACHE_MANAGER,
+  Inject,
+  Injectable,
+  NotAcceptableException,
+} from "@nestjs/common";
+import { Cache } from "cache-manager";
 import { IUsersServiceUpdate } from "src/users/interfaces/user-service.interface";
 import { UsersService } from "src/users/users.service";
-import { IEmail } from "./interfaces/mail-service.interface";
+import { IEmailsService } from "./interfaces/mail-service.interface";
 
 @Injectable()
 export class MailService {
   constructor(
     private readonly mailerService: MailerService, //
+
     private readonly userService: UsersService, //
+
+    @Inject(CACHE_MANAGER)
+    private readonly cacheManager: Cache,
   ) {}
 
   renderNewPassword(): string {
     return String(Math.floor(Math.random() * 1000000)).padStart(6, "0");
   }
 
-  async passwordResetMailer({ email }: IEmail): Promise<string> {
+  async passwordResetMailer({ email }: IEmailsService): Promise<string> {
     const user = this.userService.findOneByEmail({ email });
     if (!user) throw new NotAcceptableException();
 
@@ -43,6 +53,29 @@ export class MailService {
       console.log(error);
       throw new NotAcceptableException();
     }
+    return "전송 완료";
+  }
+
+  async verify({ email }: IEmailsService) {
+    const randomToken = String(Math.floor(Math.random() * 1000000)).padStart(
+      6,
+      "0",
+    );
+
+    await this.cacheManager.set(email, randomToken, { ttl: 3600 });
+
+    try {
+      await this.mailerService.sendMail({
+        to: email,
+        from: process.env.MAIL_AUTH_USER,
+        subject: "[upco] : 인증 코드입니다..",
+        html: `회원님의 메일 인증 코드는 ${randomToken}입니다. 인증 코드는 한 시간 동안 유효합니다.`,
+      });
+    } catch (error) {
+      console.log(error);
+      throw new NotAcceptableException();
+    }
+
     return "전송 완료";
   }
 }

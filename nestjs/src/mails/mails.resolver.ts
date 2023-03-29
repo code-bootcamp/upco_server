@@ -15,4 +15,12 @@ export class MailResolver {
   ): Promise<string> {
     return this.mailService.passwordResetMailer({ email });
   }
+
+  @PublicAccess()
+  @Mutation(() => String)
+  sendMailForVerification(
+    @Args("email") email: string, //
+  ): Promise<string> {
+    return this.mailService.verify({ email });
+  }
 }
