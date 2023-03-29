@@ -2,11 +2,11 @@ import { Injectable, NotAcceptableException } from "@nestjs/common";
 import { Redis, RedisOptions } from "ioredis";
 import { UsersService } from "src/users/users.service";
 import {
+  IMapServiceFindLocation,
+  IMapServiceGetUsersInfo,
+  IMapServiceSaveLocation,
   IBothLocation,
-  IFindAroundUsersInput,
-  IGetUsersInfo,
   IIsValidInterest,
-  ISaveLocation,
   IUserWithLocation,
 } from "./interfaces/map-service.interface";
 
@@ -24,7 +24,7 @@ export class MapService {
   async findLocation({
     interest,
     findAroundUsersInput,
-  }: IFindAroundUsersInput): Promise<IUserWithLocation[]> {
+  }: IMapServiceFindLocation): Promise<IUserWithLocation[]> {
     const { lat1, lng1, lat2, lng2 } = findAroundUsersInput;
 
     this.isValidInterest({ interest });
@@ -52,6 +52,7 @@ export class MapService {
 
     const radius = this.getDistanceFromLatLonInKm({ lat1, lng1, lat2, lng2 });
     const centerLocation = this.getCenterLocation({ lat1, lng1, lat2, lng2 });
+    console.log(centerLocation);
     const [centerLng, centerLat] = centerLocation;
 
     const aroundUsers = await client.georadius(
@@ -91,7 +92,7 @@ export class MapService {
     interest,
     userIds,
     locationByUsers,
-  }: IGetUsersInfo): Promise<IUserWithLocation[]> {
+  }: IMapServiceGetUsersInfo): Promise<IUserWithLocation[]> {
     const promisedUsers = await Promise.all(
       userIds.map((id) => this.userService.findOneById({ id })),
     );
@@ -133,7 +134,10 @@ export class MapService {
     return d / 2;
   }
 
-  async saveLocation({ context, location }: ISaveLocation): Promise<string> {
+  async saveLocation({
+    context,
+    location,
+  }: IMapServiceSaveLocation): Promise<string> {
     const id = context.req.user.id;
     const email = context.req.user.email;
     const { lat, lng } = location;
