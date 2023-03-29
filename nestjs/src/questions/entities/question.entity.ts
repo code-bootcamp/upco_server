@@ -2,6 +2,7 @@ import { Field, ObjectType } from "@nestjs/graphql";
 import {
   Column,
   CreateDateColumn,
+  DeleteDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
@@ -34,4 +35,7 @@ export class Question {
   @CreateDateColumn()
   @Field(() => Date)
   createAt: Date;
+
+  @DeleteDateColumn()
+  deleteAt: Date;
 }
