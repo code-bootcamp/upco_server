@@ -19,7 +19,7 @@ exports.addMessage = async (req, res) => {
 exports.getMessages = async (req, res) => {
   const { chatRoomId } = req.params;
   try {
-    const result = await MessageModel.find({ chatRoomId }).sort({ createAt: 1 }).limit(100);
+    const result = await MessageModel.find({ chatRoomId }).sort({ createAt: -1 }).limit(100);
     res.status(200).send(result);
   } catch (error) {
     res.status(500).send(error);
