@@ -4,6 +4,7 @@ import {
   IAuthServiceGetAccessToken,
   IAuthServiceGetRestoreToken,
   IAuthServiceLogin,
+  IAuthServiceLogout,
   IAuthServiceSetRefreshToken,
   IAuthSocialLogin,
 } from "./interfaces/auth-service.interface";
@@ -46,6 +47,11 @@ export class AuthService {
       });
     this.setRefreshToken({ user, res });
     res.redirect(process.env.ORIGIN + "/frontend/login");
+  }
+
+  async logout({ req }: IAuthServiceLogout): Promise<void> {
+    // 레디스에 refresh 토큰과 access 토큰 등록하기
+    // 쿠키 파괴하기
   }
 
   setRefreshToken({ user, res }: IAuthServiceSetRefreshToken): void {
