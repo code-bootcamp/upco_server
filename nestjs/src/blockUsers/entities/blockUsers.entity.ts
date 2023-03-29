@@ -12,12 +12,12 @@ import {
 @ObjectType()
 export class BlockUser {
   @PrimaryGeneratedColumn("uuid")
-  @Field(() => String)
-  id: string;
-
-  @Column({ default: false })
   @Field(() => String, { nullable: true })
-  blockUserId: string;
+  id?: string;
+
+  @Column({ nullable: true })
+  @Field(() => String, { nullable: true })
+  blockUserId?: string;
 
   @JoinColumn()
   @ManyToOne(() => User)

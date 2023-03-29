@@ -3,7 +3,10 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { User } from "src/users/entities/user.entity";
 import { Repository } from "typeorm";
 import { BlockUser } from "./entities/blockUsers.entity";
-import { IBlockUsersServiceDelete } from "./interfaces/block-service.interface";
+import {
+  IBlockUsersServiceCreate,
+  IBlockUsersServiceDelete,
+} from "./interfaces/block-service.interface";
 
 @Injectable()
 export class BlockUserService {
@@ -23,21 +26,38 @@ export class BlockUserService {
     return this.blockUsersRepository.find();
   }
 
-  async createBlock({ userId, blockUserId }) {
+  async createBlock({
+    userId,
+    blockUserId,
+  }: IBlockUsersServiceCreate): Promise<string> {
     if (blockUserId === userId)
       throw new NotAcceptableException("동일한 ID는 차단 대상이 아닙니다.");
 
-    await this.blockUsersRepository.findOne({
+    const user = await this.usersRepository.findOne({ where: { id: userId } });
+    if (!user) throw new NotAcceptableException("존재하지 않은 유저");
+
+    const blockUser = await this.usersRepository.findOne({
+      where: { id: blockUserId },
+    });
+    if (!blockUser) throw new NotAcceptableException("존재하지 않은 상대방");
+
+    const result = await this.blockUsersRepository.findOne({
       where: {
         user: { id: userId },
         blockUserId: blockUserId,
       },
     });
 
-    return this.blockUsersRepository.save({
+    if (result) {
+      throw new NotAcceptableException("이미 차단된 ID 입니다.");
+    }
+
+    await this.blockUsersRepository.save({
       user: { id: userId },
       blockUserId,
     });
+
+    return "성공적으로 차단되었습니다.";
   }
 
   async deleteBlock({

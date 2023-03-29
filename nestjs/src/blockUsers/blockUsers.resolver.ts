@@ -25,7 +25,7 @@ export class BlockUserResolver {
   blockOpponent(
     @Args("userId") userId: string,
     @Args("blockUserId") blockUserId: string, //
-  ) {
+  ): Promise<string> {
     return this.blockUsersService.createBlock({ userId, blockUserId });
   }
 
