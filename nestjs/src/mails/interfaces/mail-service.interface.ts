@@ -1,3 +1,3 @@
-export interface IEmail {
+export interface IMailServicePasswordResetMailer {
   email: string;
 }

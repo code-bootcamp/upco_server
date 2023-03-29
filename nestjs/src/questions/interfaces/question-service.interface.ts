@@ -1,15 +1,19 @@
-import { StringArraySupportOption } from "prettier";
 import { CreateQuestionInput } from "../dto/create-question.input";
 
-export interface ICreateQuestionServiceInput {
+export interface IQuestionServiceCreateQuestion {
   id: string;
   createQuestionInput: CreateQuestionInput;
 }
 
-export interface IFetchQuestionInput {
+export interface IQuestionServiceFetchQuestion {
   id: string;
   questionId: string;
 }
-export interface IFetchQuestionsInput {
+export interface IQuestionServiceFetchQuestions {
   id: string;
+}
+
+export interface IQuestionServiceDeleteQuestion {
+  id: string;
+  questionId: string;
 }
