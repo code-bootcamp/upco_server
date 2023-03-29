@@ -24,13 +24,16 @@ export class BlockUserService {
   }
 
   async createBlock({ userId, blockUserId }) {
-    const user = await this.blockUsersRepository.findOne({
+    if (blockUserId === userId)
+      throw new NotAcceptableException("동일한 ID는 차단 대상이 아닙니다.");
+
+    await this.blockUsersRepository.findOne({
       where: {
         user: { id: userId },
         blockUserId: blockUserId,
       },
     });
-    if (user) throw new NotAcceptableException();
+
     return this.blockUsersRepository.save({
       user: { id: userId },
       blockUserId,
