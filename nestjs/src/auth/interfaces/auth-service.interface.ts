@@ -10,6 +10,10 @@ export interface IAuthServiceLogin {
   res: Response;
 }
 
+export interface IAuthServiceLogout {
+  req: Request;
+}
+
 export interface IAuthServiceGetAccessToken {
   user: User | IAuthUser["user"];
 }

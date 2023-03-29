@@ -10,8 +10,8 @@ import {
   IUsersServiceDelete,
   IUsersServiceFindLogin,
   IUsersServiceFindOneByEmail,
-  IUsersServiceFindOneByHash,
   IUsersServiceFindOneById,
+  IUsersServiceGetHashedPwd,
   IUsersServiceUpdate,
 } from "./interfaces/user-service.interface";
 
@@ -30,7 +30,7 @@ export class UsersService {
     return this.usersRepository.findOne({ where: { email } });
   }
 
-  findOneByHash({ password }: IUsersServiceFindOneByHash): Promise<string> {
+  getHashedPwd({ password }: IUsersServiceGetHashedPwd): Promise<string> {
     return bcrypt.hash(password, 10);
   }
 
@@ -38,7 +38,7 @@ export class UsersService {
     const { nickname, email, password } = createUserInput;
     const user = await this.findOneByEmail({ email });
     if (user) throw new ConflictException("이미 등록된 이메일입니다!");
-    const hashedPassword = await this.findOneByHash({ password });
+    const hashedPassword = await this.getHashedPwd({ password });
     return this.usersRepository.save({
       email,
       password: hashedPassword,
