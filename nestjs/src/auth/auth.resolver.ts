@@ -33,4 +33,11 @@ export class AuthResolver {
   ): string {
     return this.authService.restoreAccessToken({ user: context.req.user });
   }
+
+  @Mutation(() => String)
+  logout(@Context() context: IContext): Promise<string> {
+    return this.authService.logout({
+      req: context.req,
+    });
+  }
 }
