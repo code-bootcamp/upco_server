@@ -36,3 +36,8 @@ export interface IUsersServiceFindLogin {
 export interface IUsersServiceDelete {
   id: string;
 }
+
+export interface IUsersServiceVerifyEmail {
+  email: string;
+  code: string;
+}

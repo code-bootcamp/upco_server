@@ -7,4 +7,4 @@ RUN yarn install
 
 COPY . /chat/
 
-CMD yarn start
+CMD yarn dev

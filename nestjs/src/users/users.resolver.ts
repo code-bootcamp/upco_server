@@ -69,4 +69,13 @@ export class UsersResolver {
   ): Promise<boolean> {
     return this.usersService.delete({ id });
   }
+
+  @PublicAccess()
+  @Mutation(() => Boolean)
+  verifyEmail(
+    @Args("email") email: string,
+    @Args("code") code: string,
+  ): Promise<boolean> {
+    return this.usersService.verifyEmail({ email, code });
+  }
 }

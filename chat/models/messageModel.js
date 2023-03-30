@@ -7,10 +7,7 @@ const MessageSchema = new mongoose.Schema({
   senderId: {
     type: String,
   },
-  receiverId: {
-    type: String,
-  },
-  message: {
+  contents: {
     type: String,
   },
   createdAt: {

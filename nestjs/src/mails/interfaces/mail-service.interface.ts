@@ -1,3 +1,3 @@
-export interface IEmail {
+export interface IEmailsService {
   email: string;
 }

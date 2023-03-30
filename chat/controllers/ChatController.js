@@ -2,7 +2,10 @@ const ChatModel = require("../models/chatModel.js");
 
 exports.createChatRoom = async (req, res) => {
   const newChat = new ChatModel({
-    chatMembers: [req.body.senderId, req.body.receiverId],
+    roomId: req.body.roomId,
+    senderId: req.body.senderId,
+    receiverId: req.body.receiverId,
+    createdAt: req.body.createdAt,
   });
   try {
     const result = await newChat.save();
