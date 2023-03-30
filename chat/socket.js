@@ -58,15 +58,15 @@ module.exports = (server) => {
       socket.emit("roomCreateOrJoin", roomId, "채팅방에 입장하셨습니다.");
     });
 
-    socket.on("message", (message) => {
-      const { roomId, contents, myId } = message;
-      chatRoom[roomId].message.push({
-        userId: myId,
-        content: contents,
-      });
-      console.log(message);
-      socket.to(roomId).broadcast.emit("client", message);
-    });
+    // socket.on("message", (message) => {
+    //   const { roomId, contents, myId } = message;
+    //   chatRoom[roomId].message.push({
+    //     userId: myId,
+    //     content: contents,
+    //   });
+    //   console.log(message);
+    //   socket.to(roomId).broadcast.emit("client", message);
+    // });
 
     // 화상채팅 부분
     socket.on("offer", (offer) => {
