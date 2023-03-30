@@ -49,9 +49,10 @@ export class AuthService {
     res.redirect(process.env.ORIGIN + "/frontend/login");
   }
 
-  async logout({ req }: IAuthServiceLogout): Promise<void> {
+  async logout({ req }: IAuthServiceLogout): Promise<string> {
     // 레디스에 refresh 토큰과 access 토큰 등록하기
     // 쿠키 파괴하기
+    return "로그아웃 완료";
   }
 
   setRefreshToken({ user, res }: IAuthServiceSetRefreshToken): void {
