@@ -3,7 +3,6 @@ import { PublicAccess } from "src/common/decorator/public-access";
 import { IContext } from "src/common/interfaces/context";
 import { CreateUserInput } from "./dto/create-user.dto";
 import { UpdateUserInput } from "./dto/update-user.dto";
-//import { UpdateUserInput } from "./dto/update-user.dto";
 import { User } from "./entities/user.entity";
 import { UsersService } from "./users.service";
 
@@ -29,6 +28,7 @@ export class UsersResolver {
     return this.usersService.findOneByEmail({ email });
   }
 
+  @PublicAccess()
   @Query(() => User)
   fetchUser(
     @Args("id") id: string, //

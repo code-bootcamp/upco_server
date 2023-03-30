@@ -7,8 +7,8 @@ import { QuestionService } from "../questions.service";
 import { v4 as uuidv4 } from "uuid";
 import { ObjectType } from "@nestjs/graphql";
 import {
-  ICreateQuestionServiceInput,
-  IFetchQuestionsInput,
+  IQuestionServiceCreateQuestion,
+  IQuestionServiceFetchQuestions,
 } from "../interfaces/question-service.interface";
 
 @ObjectType()
@@ -44,11 +44,18 @@ class MockQuestionRepository {
     },
   ];
 
-  find({ id }: IFetchQuestionsInput): MockQuestion[] {
+  find({ id }: IQuestionServiceFetchQuestions): MockQuestion[] {
     return this.database.filter((question) => question.user === id);
   }
 
-  save({ id, createQuestionInput }: ICreateQuestionServiceInput) {
+  findOne({ questionId }): MockQuestion {
+    return this.database.find((question) => question.id === questionId);
+  }
+
+  save({
+    id,
+    createQuestionInput,
+  }: IQuestionServiceCreateQuestion): MockQuestion {
     const newQuestion = new MockQuestion();
     const { title, contents } = createQuestionInput;
     newQuestion.id = uuidv4();
@@ -60,6 +67,13 @@ class MockQuestionRepository {
     this.database.push(newQuestion);
 
     return newQuestion;
+  }
+
+  softDelete({ questionId }): boolean {
+    const index = this.database.findIndex((item) => item.id === questionId);
+    this.database.splice(index, 1);
+    const result = this.findOne({ questionId });
+    return !result ? true : false;
   }
 }
 describe("QuestionService", () => {
@@ -113,49 +127,47 @@ describe("QuestionService", () => {
         createAt: expect.any(Date),
       });
     });
+    describe("checkEmpty", () => {
+      it("checkEmpty 함수 전체 공백 시 error 반환해야 함", () => {
+        const text = "   ";
+        expect(() => questionService.checkEmpty(text)).toThrow(
+          NotAcceptableException,
+        );
+      });
 
-    it("id가 존재하지 않을 시 error 반환해야 함", () => {
-      const id = "isNotExistId";
-      try {
-        userService.findOneById({ id });
-      } catch (error) {
-        expect(error).toBeInstanceOf(NotAcceptableException);
-      }
-    });
+      it("checkEmpty 함수 맨 앞 공백 시 error 반환해야 함", () => {
+        const text = " a";
+        expect(() => questionService.checkEmpty(text)).toThrow(
+          NotAcceptableException,
+        );
+      });
 
-    it("checkEmpty 함수 전체 공백 시 error 반환해야 함", () => {
-      const title = "   ";
-      try {
-        questionService.checkEmpty(title);
-        fail("예외 미발생 시 fail");
-      } catch (error) {
-        expect(error).toBeInstanceOf(NotAcceptableException);
-      }
-    });
-
-    it("checkEmpty 함수 맨 앞 공백 시 error 반환해야 함", () => {
-      const title = " a";
-      try {
-        questionService.checkEmpty(title);
-        fail("예외 미발생 시 fail");
-      } catch (error) {
-        expect(error).toBeInstanceOf(NotAcceptableException);
-      }
-    });
-
-    it("checkEmpty 함수 맨 뒤 공백 시 error 반환해야 함", () => {
-      const content = "a   ";
-      try {
-        questionService.checkEmpty(content);
-        fail("예외 미발생 시 fail");
-      } catch (error) {
-        expect(error).toBeInstanceOf(NotAcceptableException);
-      }
+      it("checkEmpty 함수 맨 뒤 공백 시 error 반환해야 함", () => {
+        const text = "a ";
+        expect(() => questionService.checkEmpty(text)).toThrow(
+          NotAcceptableException,
+        );
+      });
     });
   });
 
   describe("fetchQuestion", () => {
-    it("fetchQuestion 함수 실행 시 id에 해당하는 데이터 가져와야 함", () => {
+    it("fetchQuestion 함수 실행 시 questionId에 해당하는 데이터 가져와야 함", () => {
+      const questionId = "question1";
+      const mockQuestionRepository = new MockQuestionRepository();
+      const result = mockQuestionRepository.findOne({ questionId });
+      expect(result).toEqual({
+        id: "question1",
+        title: "title1",
+        user: "user1",
+        contents: "contents1",
+        createAt: expect.any(Date),
+      });
+    });
+  });
+
+  describe("fetchQuestions", () => {
+    it("fetchQuestions 함수 실행 시 id에 해당하는 데이터 가져와야 함", () => {
       const id = "user1";
       const mockQuestionRepository = new MockQuestionRepository();
       const result = mockQuestionRepository.find({ id });
@@ -165,6 +177,26 @@ describe("QuestionService", () => {
           (question) => question.user === id,
         ),
       );
+    });
+
+    describe("extractNumberFromDate", () => {
+      it("extractNumberFromDate 함수에 date 객체 입력 시 숫자를 추출하여 반환해야 함", () => {
+        const date = new Date("2022-01-01T00:00:00.000Z");
+        const result = questionService.extractNumberFromDate(date);
+        const expectResult = 20220101000000000;
+
+        expect(result).toBe(expectResult);
+      });
+    });
+  });
+
+  describe("deleteQuestion", () => {
+    it("deleteQuestion 실행 시 questionId에 해당하는 데이터가 삭제되어야 함", () => {
+      const questionId = "question1";
+      const mockQuestionRepository = new MockQuestionRepository();
+
+      const result = mockQuestionRepository.softDelete({ questionId });
+      expect(result).toBe(true);
     });
   });
 });

@@ -15,6 +15,7 @@ import { QuestionModule } from "./questions/questions.module";
 import { FriendsModule } from "./friends/friends.module";
 import { FilesModule } from "./files/files.module";
 import { NoticesModule } from "./notices/notice.module";
+import { InterestsModule } from "./interests/interests.module";
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { NoticesModule } from "./notices/notice.module";
     BlockUserModule,
     FriendsModule,
     FilesModule,
+    InterestsModule,
     MailModule,
     MapModule,
     NoticesModule,

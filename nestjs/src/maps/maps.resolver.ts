@@ -1,7 +1,7 @@
 import { Args, Context, Mutation, Query, Resolver } from "@nestjs/graphql";
 import { IContext } from "src/common/interfaces/context";
 import { FindAroundUserInput } from "./dto/find-AroundUser.input";
-import { FindAroundUserOutput } from "./dto/find-AroundUser.output";
+import { UserWithLocation } from "./dto/find-AroundUser.output";
 import { SaveUserLocationInput } from "./dto/save-userLocation.input";
 import { IUserWithLocation } from "./interfaces/map-service.interface";
 import { MapService } from "./maps.service";
@@ -12,8 +12,7 @@ export class MapResolver {
     private readonly mapService: MapService, //
   ) {}
 
-  // GraphQL return 값, typescript 추가할 예정입니다.
-  @Query(() => [FindAroundUserOutput])
+  @Query(() => [UserWithLocation])
   findAroundUsers(
     @Args("interest", { nullable: true }) interest: string = null, //
     @Args("bothLocation") findAroundUsersInput: FindAroundUserInput, //

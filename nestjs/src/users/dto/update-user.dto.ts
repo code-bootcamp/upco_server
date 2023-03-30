@@ -10,6 +10,7 @@ export class UpdateUserInput extends PartialType(
     "updateAt",
     "provider",
     "email",
+    "reported",
   ]),
   InputType,
 ) {}
