@@ -23,6 +23,9 @@ services:
     build:
       context: ./chat
       dockerfile: Dockerfile.dev
+    volumes:
+      - ./chat/index.js:/chat/index.js
+      - ./chat/socket.js:/chat/socket.js
     ports:
       - 4000:4000
     env_file:

@@ -1,4 +1,9 @@
-import { ConflictException, Injectable } from "@nestjs/common";
+import {
+  CACHE_MANAGER,
+  ConflictException,
+  Inject,
+  Injectable,
+} from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { User } from "./entities/user.entity";
@@ -13,13 +18,18 @@ import {
   IUsersServiceFindOneById,
   IUsersServiceGetHashedPwd,
   IUsersServiceUpdate,
+  IUsersServiceVerifyEmail,
 } from "./interfaces/user-service.interface";
+import { Cache } from "cache-manager";
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
+
+    @Inject(CACHE_MANAGER)
+    private readonly cacheManager: Cache,
   ) {}
 
   async findOneById({ id }: IUsersServiceFindOneById): Promise<User> {
@@ -89,5 +99,14 @@ export class UsersService {
     const result = await this.usersRepository.softDelete({ id });
     console.log(result);
     return result.affected ? true : false;
+  }
+
+  async verifyEmail({
+    email,
+    code,
+  }: IUsersServiceVerifyEmail): Promise<boolean> {
+    const savedCode = await this.cacheManager.get(email);
+
+    return savedCode === code;
   }
 }
