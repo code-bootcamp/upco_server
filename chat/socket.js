@@ -1,8 +1,10 @@
 const socket = require("socket.io");
 const { v4: uuidv4 } = require("uuid");
+const ChatModel = require("./models/chatModel.js");
+const MessageModel = require("./models/messageModel.js");
 
 module.exports = (server) => {
-  const io = socket(server, { path: "/socket.io" });
+  const io = socket(server, { path: "chat/socket.io" });
 
   const chatRoom = {};
 
@@ -24,8 +26,7 @@ module.exports = (server) => {
     console.log("클라이언트 연결 : ", ip, socket.id);
     // socket.emit("join message", "채팅방에 입장하셨습니다.");
 
-    socket.on("createRoom", (myId, anotherId) => {
-      // console.log(myId, anotherId);
+    socket.on("createRoom", async (myId, anotherId) => {
       let roomId;
 
       if (Object.keys(chatRoom).length === 0) {
@@ -53,20 +54,49 @@ module.exports = (server) => {
           };
         }
       }
-      console.log(roomId, myId, anotherId);
+      // console.log(roomId, myId, anotherId);
+
+      const newChatRoom = new ChatModel({
+        roomId,
+        senderId: myId,
+        receiverId: anotherId,
+        createdAt: Date.now(),
+      });
+      // console.log(newChatRoom);
+      const result = await newChatRoom.save();
+      // console.log(result);
       socket.join(roomId);
-      socket.emit("roomCreateOrJoin", roomId, "채팅방에 입장하셨습니다.");
+      socket.emit(
+        "roomCreateOrJoin",
+        roomId,
+        result,
+        "채팅방에 입장하셨습니다.",
+      );
     });
 
-    // socket.on("message", (message) => {
-    //   const { roomId, contents, myId } = message;
-    //   chatRoom[roomId].message.push({
-    //     userId: myId,
-    //     content: contents,
-    //   });
-    //   console.log(message);
-    //   socket.to(roomId).broadcast.emit("client", message);
-    // });
+    socket.on("joinRoom", async (chatRoomId) => {
+      const joinChatRoom = await MessageModel.find({ chatRoomId });
+      console.log(joinChatRoom);
+      socket.emit("load Message", joinChatRoom);
+    });
+
+    socket.on("message", async (message) => {
+      const { roomId, contents, myId } = message;
+      chatRoom[roomId].message.push({
+        userId: myId,
+        content: contents,
+      });
+      // console.log(message);
+      const newChat = new MessageModel({
+        chatRoomId: roomId,
+        senderId: myId,
+        contents,
+        createdAt: Date.now(),
+      });
+      const result = await newChat.save();
+      // console.log(result);
+      socket.broadcast.emit("client", message.contents);
+    });
 
     // 화상채팅 부분
     socket.on("offer", (offer) => {
