@@ -1,13 +1,8 @@
 import { ObjectType } from "@nestjs/graphql";
-import { Test, TestingModule } from "@nestjs/testing";
-import { getRepositoryToken } from "@nestjs/typeorm";
-import { User } from "src/users/entities/user.entity";
 import {
   IUsersServiceFindOneById,
   IUsersServiceUpdate,
 } from "src/users/interfaces/user-service.interface";
-import { UsersService } from "src/users/users.service";
-import { FilesService } from "../files.service";
 
 ObjectType();
 class MockUser {
@@ -66,25 +61,6 @@ class MockBucket {
 }
 
 describe("fileService", () => {
-  let filesService: FilesService;
-  let userService: UsersService;
-
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        FilesService,
-        UsersService,
-        {
-          provide: getRepositoryToken(User),
-          useClass: MockUserRepository,
-        },
-      ],
-    }).compile();
-
-    filesService = module.get<FilesService>(FilesService);
-    userService = module.get<UsersService>(UsersService);
-  });
-
   describe("uploadFile", () => {
     it("파일 업로드 시 url 을 반환해야 함", async () => {
       const id = "user1";
