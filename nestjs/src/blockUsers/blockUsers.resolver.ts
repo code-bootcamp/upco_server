@@ -25,21 +25,23 @@ export class BlockUserResolver {
   blockOpponent(
     @Args("userId") userId: string,
     @Args("blockUserId") blockUserId: string, //
-  ) {
+  ): Promise<string> {
     return this.blockUsersService.createBlock({ userId, blockUserId });
   }
 
-  @Mutation(() => Boolean)
+  @Mutation(() => BlockUser)
   unblockOpponent(@Args("blockUserId") blockUserId: string): Promise<boolean> {
     return this.blockUsersService.deleteBlock({ blockUserId });
   }
 
   @Mutation(() => User)
   async reportOpponent(
+    @Args("userId") userId: string,
     @Args("reportedId") reportedId: string, //
   ) {
     return this.blockUsersService.createReport({
       reportedId,
+      userId,
     });
   }
 }

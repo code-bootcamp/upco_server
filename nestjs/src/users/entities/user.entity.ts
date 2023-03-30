@@ -1,10 +1,13 @@
 import { Field, Int, ObjectType } from "@nestjs/graphql";
 import { PROVIDER_ENUM } from "src/common/interfaces/provider";
+import { Interest } from "src/interests/entities/interest.entity";
 import {
   Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  JoinTable,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
@@ -13,7 +16,7 @@ import {
 @ObjectType()
 export class User {
   @PrimaryGeneratedColumn("uuid")
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   id: string;
 
   @Column()
@@ -36,9 +39,9 @@ export class User {
   @Field(() => Int, { nullable: true })
   age?: number;
 
-  @Column({ nullable: true })
-  @Field(() => String, { nullable: true })
-  interest?: string;
+  @ManyToOne(() => Interest)
+  @Field(() => Interest)
+  interests: Interest;
 
   @Column({ default: 0 })
   @Field(() => Int, { nullable: true })
