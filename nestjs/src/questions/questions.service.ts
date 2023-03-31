@@ -29,7 +29,7 @@ export class QuestionService {
   }: IQuestionServiceCreateQuestion): Promise<Question> {
     const { title, contents } = createQuestionInput;
 
-    const user = this.userService.findOneById({ id });
+    const user = this.userService.findOneByIdWithInterests({ id });
     if (!user) throw new NotAcceptableException();
 
     this.checkEmpty(title);
@@ -46,7 +46,7 @@ export class QuestionService {
     id,
     questionId,
   }: IQuestionServiceFetchQuestion): Promise<Question> {
-    const user = this.userService.findOneById({ id });
+    const user = this.userService.findOneByIdWithInterests({ id });
     if (!user) throw new NotAcceptableException();
     return this.questionRepository.findOne({ where: { id: questionId } });
   }
@@ -70,7 +70,7 @@ export class QuestionService {
     id,
     questionId,
   }: IQuestionServiceDeleteQuestion): Promise<boolean> {
-    const user = this.userService.findOneById({ id });
+    const user = this.userService.findOneByIdWithInterests({ id });
     if (!user) throw new NotAcceptableException();
     const result = await this.questionRepository.softDelete({ id: questionId });
     return result.affected ? true : false;

@@ -10,14 +10,6 @@ export class MailResolver {
 
   @PublicAccess()
   @Mutation(() => String)
-  passwordResetMailer(
-    @Args("email") email: string, //
-  ): Promise<string> {
-    return this.mailService.passwordResetMailer({ email });
-  }
-
-  @PublicAccess()
-  @Mutation(() => String)
   sendMailForVerification(
     @Args("email") email: string, //
   ): Promise<string> {

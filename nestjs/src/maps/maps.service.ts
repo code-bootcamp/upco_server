@@ -94,7 +94,7 @@ export class MapService {
     locationByUsers,
   }: IMapServiceGetUsersInfo): Promise<IUserWithLocation[]> {
     const promisedUsers = await Promise.all(
-      userIds.map((id) => this.userService.findOneById({ id })),
+      userIds.map((id) => this.userService.findOneByIdWithInterests({ id })),
     );
 
     const usersWithLocation: IUserWithLocation[] = promisedUsers.map(
