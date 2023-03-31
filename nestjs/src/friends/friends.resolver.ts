@@ -1,4 +1,5 @@
-import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
+import { Args, Context, Mutation, Query, Resolver } from "@nestjs/graphql";
+import { IContext } from "src/common/interfaces/context";
 import { Friend } from "./entities/friend.entity";
 import { FriendsService } from "./friends.service";
 
@@ -6,18 +7,28 @@ import { FriendsService } from "./friends.service";
 export class FriendsResolver {
   constructor(private readonly friendsService: FriendsService) {}
 
-  @Mutation(() => Friend)
-  addFriend(
-    @Args("isSuccess") isSuccess: boolean,
-    @Args("userId") userId: string,
-    @Args("opponentId") opponentId: string,
-  ) {
-    return this.friendsService.createFriend({ userId, opponentId, isSuccess });
+  @Query(() => [Friend])
+  fetchFriends() {
+    return this.friendsService.findFriends();
   }
 
   @Query(() => [Friend])
-  fetchFriends() {
-    return this.friendsService.findFriendAll();
+  fetchFriendRequests(
+    @Context() context: IContext, //
+  ) {
+    const userId = context.req.user.id;
+    return this.friendsService.findRequests({ userId });
+  }
+
+  // @Mutation(() => )
+  rejectFriendRequest() {}
+
+  // @Mutation(() => )
+  acceptFriendRequest() {}
+
+  // @Mutation(() =>)
+  createFriendRequest() {
+    return this.friendsService.createRequest();
   }
 
   @Mutation(() => Boolean)

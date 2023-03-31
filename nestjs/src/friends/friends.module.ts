@@ -7,9 +7,9 @@ import { FriendsService } from "./friends.service";
 
 @Module({
   imports: [
+    User,
     TypeOrmModule.forFeature([
       Friend, //
-      User,
     ]),
   ],
   providers: [
