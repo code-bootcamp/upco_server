@@ -1,9 +1,13 @@
 import { Injectable, NotAcceptableException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { User } from "src/users/entities/user.entity";
-import { Repository } from "typeorm";
+import { UsersService } from "src/users/users.service";
+import { DataSource, Repository } from "typeorm";
 import { Friend } from "./entities/friend.entity";
-import { IFriendsServiceDelete } from "./interfaces/friend-service.interface";
+import {
+  IFriendsServiceIdAndReceiverId,
+  IFriendsServiceSenderIdAndReceiverId,
+  IFriendsServiceUserId,
+} from "./interfaces/friend-service.interface";
 
 @Injectable()
 export class FriendsService {
@@ -11,64 +15,200 @@ export class FriendsService {
     @InjectRepository(Friend)
     private readonly friendsRepository: Repository<Friend>,
 
-    @InjectRepository(User)
-    private readonly usersRepository: Repository<User>,
+    private readonly usersService: UsersService,
+
+    private readonly dataSource: DataSource,
   ) {}
-
-  async createFriend({ opponentId, userId, isSuccess }) {
-    if (opponentId === userId)
-      throw new NotAcceptableException("같은 ID는 친구로 추가할 수 없습니다.");
-
-    const user = await this.usersRepository.findOne({
-      where: { id: userId },
-    });
-    if (!user) throw new NotAcceptableException("존재하지 않은 유저");
-
-    const opponent = await this.usersRepository.findOne({
-      where: { id: opponentId },
-    });
-    if (!opponent) throw new NotAcceptableException("존재하지 않은 상대방");
-
-    const isFriend1 = await this.friendsRepository.findOne({
+  async findRequests({ userId }: IFriendsServiceUserId): Promise<Friend[]> {
+    return this.friendsRepository.find({
       where: {
-        user: { id: userId },
-        opponentId: opponentId,
+        receiver: {
+          id: userId,
+        },
       },
     });
+  }
 
-    const isFriend2 = await this.friendsRepository.findOne({
+  async findFriends({ userId }: IFriendsServiceUserId): Promise<Friend[]> {
+    return this.friendsRepository.find({
       where: {
-        user: { id: opponentId },
-        opponentId: userId,
+        sender: {
+          id: userId,
+        },
+        status: true,
       },
     });
-
-    if (!isFriend1) {
-      // 친구 요청 내역이 없는 경우, 새로운 친구 요청 보내기
-      await this.friendsRepository.save({
-        user: { id: userId },
-        opponentId: opponentId,
-        isSuccess,
-      });
-    } else if (!isFriend2) {
-      await this.friendsRepository.save({
-        user: { id: opponentId },
-        opponentId: userId,
-        isSuccess,
-      });
-    }
-
-    return;
   }
 
-  findFriendAll() {
-    return this.friendsRepository.find();
-  }
-
-  async delete({ opponentId }: IFriendsServiceDelete): Promise<boolean> {
-    const result = await this.friendsRepository.delete({
-      opponentId,
+  async findRequestBySenderIdAndReceiverId({
+    senderId,
+    receiverId,
+  }: IFriendsServiceSenderIdAndReceiverId): Promise<Friend> {
+    return this.friendsRepository.findOne({
+      where: {
+        sender: {
+          id: senderId,
+        },
+        receiver: {
+          id: receiverId,
+        },
+      },
     });
+  }
+
+  async findRequestByIdAndReceiverId({
+    id,
+    receiverId,
+  }: IFriendsServiceIdAndReceiverId): Promise<Friend> {
+    return this.friendsRepository.findOne({
+      where: {
+        id,
+        receiver: {
+          id: receiverId,
+        },
+      },
+    });
+  }
+
+  async rejectRequests({
+    id,
+    receiverId,
+  }: IFriendsServiceIdAndReceiverId): Promise<boolean> {
+    await this.verifyRequest({ id, receiverId });
+
+    const result = await this.friendsRepository.delete({ id });
+
     return result.affected ? true : false;
+  }
+
+  async acceptRequest({
+    id,
+    receiverId,
+  }: IFriendsServiceIdAndReceiverId): Promise<Friend[]> {
+    await this.verifyRequest({ id, receiverId });
+
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      const request = await queryRunner.manager.findOne(Friend, {
+        where: { id },
+        relations: ["sender", "receiver"],
+        select: {
+          id: true,
+          receiver: {
+            id: true,
+          },
+          sender: {
+            id: true,
+          },
+        },
+      });
+
+      const updateRequest = this.friendsRepository.create({
+        ...request,
+        status: true,
+      });
+
+      await queryRunner.manager.save(updateRequest);
+
+      const newRequest = this.friendsRepository.create({
+        sender: {
+          id: request.receiver.id,
+        },
+        receiver: {
+          id: request.sender.id,
+        },
+        status: true,
+      });
+
+      const addedFriend = await queryRunner.manager.save(newRequest);
+
+      await queryRunner.commitTransaction();
+
+      return [updateRequest, addedFriend];
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+    } finally {
+      queryRunner.release();
+    }
+  }
+
+  async verifyRequest({
+    id,
+    receiverId,
+  }: IFriendsServiceIdAndReceiverId): Promise<void> {
+    const request = await this.findRequestByIdAndReceiverId({ id, receiverId });
+
+    if (!request || request.status) throw new NotAcceptableException("");
+  }
+
+  async createRequest({
+    senderId,
+    receiverId,
+  }: IFriendsServiceSenderIdAndReceiverId): Promise<Friend> {
+    if (senderId === receiverId) throw new NotAcceptableException("");
+
+    const user = await this.usersService.findOneById({ userId: receiverId });
+
+    if (!user) throw new NotAcceptableException("");
+
+    const request = await this.findRequestBySenderIdAndReceiverId({
+      senderId,
+      receiverId,
+    });
+
+    if (request) throw new NotAcceptableException("");
+
+    return this.friendsRepository.save({
+      sender: {
+        id: senderId,
+      },
+      receiver: {
+        id: receiverId,
+      },
+    });
+  }
+
+  async deleteFriend({
+    senderId,
+    receiverId,
+  }: IFriendsServiceSenderIdAndReceiverId): Promise<boolean> {
+    const friendShip = await this.findRequestBySenderIdAndReceiverId({
+      senderId,
+      receiverId,
+    });
+
+    if (!friendShip) throw new NotAcceptableException("");
+
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      const oneside = await queryRunner.manager.delete(Friend, {
+        id: friendShip.id,
+      });
+
+      const otherside = await queryRunner.manager.delete(Friend, {
+        sender: {
+          id: receiverId,
+        },
+        receiver: {
+          id: senderId,
+        },
+      });
+
+      await queryRunner.commitTransaction();
+
+      console.log(oneside.affected);
+
+      return oneside.affected & otherside.affected ? true : false;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+    } finally {
+      queryRunner.release();
+    }
   }
 }
