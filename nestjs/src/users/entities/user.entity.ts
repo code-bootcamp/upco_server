@@ -7,7 +7,7 @@ import {
   DeleteDateColumn,
   Entity,
   JoinTable,
-  ManyToOne,
+  ManyToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
@@ -16,7 +16,7 @@ import {
 @ObjectType()
 export class User {
   @PrimaryGeneratedColumn("uuid")
-  @Field(() => String, { nullable: true })
+  @Field(() => String)
   id: string;
 
   @Column()
@@ -39,9 +39,10 @@ export class User {
   @Field(() => Int, { nullable: true })
   age?: number;
 
-  @ManyToOne(() => Interest)
-  @Field(() => Interest)
-  interests: Interest;
+  @JoinTable()
+  @ManyToMany(() => Interest, (interests) => interests.user)
+  @Field(() => [Interest], { nullable: true })
+  interests?: Interest[];
 
   @Column({ default: 0 })
   @Field(() => Int, { nullable: true })

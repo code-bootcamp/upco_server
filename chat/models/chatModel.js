@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const ChatSchema = new mongoose.Schema({
-  roomId: {
+  chatRoomId: {
     type: String,
   },
   senderId: {
@@ -17,4 +17,3 @@ const ChatSchema = new mongoose.Schema({
 });
 
 module.exports = mongoose.model("Chat", ChatSchema);
-

@@ -20,28 +20,19 @@ export class UsersResolver {
     return this.usersService.create({ createUserInput });
   }
 
-  @PublicAccess()
-  @Query(() => User)
-  fetchId(
-    @Args("email") email: string, //
-  ): Promise<User> {
-    return this.usersService.findOneByEmail({ email });
-  }
-
-  @PublicAccess()
   @Query(() => User)
   fetchUser(
     @Args("id") id: string, //
   ): Promise<User> {
-    return this.usersService.findOneById({ id });
+    return this.usersService.findOneByIdWithInterests({ id });
   }
 
   @Query(() => User)
   fetchLoginUser(
     @Context() context: IContext, //
   ): Promise<User> {
-    const userId = context.req.user.id;
-    return this.usersService.findLogin({ userId });
+    const id = context.req.user.id;
+    return this.usersService.findOneByIdWithInterests({ id });
   }
 
   @Mutation(() => User)
@@ -58,7 +49,7 @@ export class UsersResolver {
   updateUserPwd(
     @Context() context: IContext,
     @Args("password") password: string,
-  ): Promise<User> {
+  ): Promise<string> {
     const id = context.req.user.id;
     return this.usersService.updatePassword({ id, password });
   }

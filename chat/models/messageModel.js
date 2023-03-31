@@ -14,6 +14,9 @@ const MessageSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  isSent: {
+    type: Boolean,
+  },
 });
 
 module.exports = mongoose.model("Message", MessageSchema);
