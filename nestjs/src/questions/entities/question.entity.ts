@@ -22,11 +22,11 @@ export class Question {
   // @Field(() => User)
   user: User;
 
-  @Column()
+  @Column({ type: "varchar", length: 50 })
   @Field(() => String)
   title: string;
 
-  @Column()
+  @Column({ type: "varchar", length: 2000 })
   @Field(() => String)
   contents: string;
 

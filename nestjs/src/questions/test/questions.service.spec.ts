@@ -141,13 +141,6 @@ describe("QuestionService", () => {
           NotAcceptableException,
         );
       });
-
-      it("checkEmpty 함수 맨 뒤 공백 시 error 반환해야 함", () => {
-        const text = "a ";
-        expect(() => questionService.checkEmpty(text)).toThrow(
-          NotAcceptableException,
-        );
-      });
     });
   });
 

@@ -1,5 +1,11 @@
 import { NotAcceptableException } from "@nestjs/common";
+import { ObjectType } from "@nestjs/graphql";
 import { Test } from "@nestjs/testing";
+import {
+  IUsersServiceFindOneById,
+  IUsersServiceUpdate,
+} from "src/users/interfaces/user-service.interface";
+import { UsersResolver } from "src/users/users.resolver";
 import { UsersService } from "src/users/users.service";
 import { MapService } from "../maps.service";
 
@@ -63,7 +69,7 @@ describe("mapService", () => {
         expect(() => mapService.isValidInterest({ interest })).not.toThrow();
       });
 
-      it("isValidInterest 함수 실행 시 인자가 string인 경우 오류를 반환하지 않음", () => {
+      it("isValidInterest 함수 실행 시 인자가 null인 경우 오류를 반환하지 않음", () => {
         const interest = null;
         expect(() => mapService.isValidInterest({ interest })).not.toThrow();
       });
@@ -71,6 +77,17 @@ describe("mapService", () => {
 
     describe("isValidLocationRange", () => {
       // isValidLocationRange
+      it("isValidLocationRange 함수 정상실행 시 오류반환하지 않음", () => {
+        const lat1 = 10;
+        const lat2 = 20;
+        const lng1 = 10;
+        const lng2 = 20;
+
+        expect(() =>
+          mapService.isValidLocationRange({ lat1, lng1, lat2, lng2 }),
+        ).not.toThrow(NotAcceptableException);
+      });
+
       it("isValidLocationRange 함수 실행 시 lat1 < lat2 가 아니면 오류반환 해야 함", () => {
         const lat1 = 100;
         const lat2 = 0;

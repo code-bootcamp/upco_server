@@ -1,6 +1,7 @@
 import { MailerModule } from "@nest-modules/mailer";
+import { CacheModule } from "@nestjs/common";
 import { ObjectType } from "@nestjs/graphql";
-import { Test, TestingModule } from "@nestjs/testing";
+import { Test } from "@nestjs/testing";
 import { getRepositoryToken } from "@nestjs/typeorm";
 import { MailerService } from "nest-mailer";
 import { User } from "src/users/entities/user.entity";
@@ -8,7 +9,6 @@ import {
   IUsersServiceFindOneById,
   IUsersServiceUpdate,
 } from "src/users/interfaces/user-service.interface";
-import { UsersModule } from "src/users/users.module";
 import { UsersService } from "src/users/users.service";
 import { MailService } from "../mails.service";
 
@@ -28,6 +28,7 @@ class MockUser {
   deleteAt: Date;
 }
 
+class MockUserService {}
 class MockUserRepository {
   database = [
     {
@@ -77,6 +78,7 @@ describe("mailService", () => {
             },
           }),
         }),
+        CacheModule.register({}),
       ],
       providers: [
         UsersService,
