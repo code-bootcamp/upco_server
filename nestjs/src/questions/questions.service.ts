@@ -17,9 +17,9 @@ export class QuestionService {
     private readonly userService: UsersService, //
   ) {}
 
-  // 주어진 text의 앞뒤 공백, 전체 공백을 체크하는 로직입니다.
+  // 주어진 text의 앞 공백, 전체 공백을 체크하는 로직입니다.
   checkEmpty(text: string): void {
-    if (text.trim() === "" || text[0] === " " || text.at(-1) === " ")
+    if (text.trim() === "" || text[0] === " ")
       throw new NotAcceptableException();
   }
 
