@@ -105,15 +105,18 @@ export class MapService {
       }),
     );
 
-    // ** user entity에서 interest가 추가될 경우, 추가할 로직 **
-    // if(interest !== null) {
-    // usersWithLocation = usersWithLocation.filter((user) =>
-    //   user.interest.includes(interest),
-    // )}
-    // ** 차단 유저 보여주지 않는 로직 **
-    //
-    // ** 신고 누적수가 많은 유저 밑에 보여주는 로직 **
-    return usersWithLocation.sort((a, b) => a.reported - b.reported);
+    // query에서 interest를 요구할 경우, 해당 interest를 가지고 있는 유저들을 반환하는 로직입니다.
+    let usersWithLocationInterest;
+    if (interest !== null) {
+      usersWithLocationInterest = usersWithLocation.filter((user) =>
+        user.interests.some((usersInterest) => usersInterest.name === interest),
+      );
+    }
+
+    // ** 신고 누적수에 따라 오름차순으로 정렬하여 반환하는 로직입니다.
+    return interest !== null
+      ? usersWithLocationInterest.sort((a, b) => a.reported - b.reported)
+      : usersWithLocation.sort((a, b) => a.reported - b.reported);
   }
 
   // 두 좌표 사이의 거리를 구하는 로직입니다.
