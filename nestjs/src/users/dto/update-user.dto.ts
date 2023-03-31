@@ -1,16 +1,16 @@
-import { InputType, OmitType, PartialType } from "@nestjs/graphql";
-import { User } from "../entities/user.entity";
+import { Field, InputType, Int } from "@nestjs/graphql";
 
 @InputType()
-export class UpdateUserInput extends PartialType(
-  OmitType(User, [
-    "id",
-    "createAt",
-    "deleteAt",
-    "updateAt",
-    "provider",
-    "email",
-    "reported",
-  ]),
-  InputType,
-) {}
+export class UpdateUserInput {
+  @Field(() => String, { nullable: true })
+  nickname?: string;
+
+  @Field(() => Int, { nullable: true })
+  age?: number;
+
+  @Field(() => [String], { nullable: true })
+  interests?: string[];
+
+  @Field(() => String, { nullable: true })
+  image?: string;
+}

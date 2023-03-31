@@ -21,6 +21,8 @@ import {
   IUsersServiceVerifyEmail,
 } from "./interfaces/user-service.interface";
 import { Cache } from "cache-manager";
+import { InterestsService } from "src/interests/interests.service";
+import { Interest } from "src/interests/entities/interest.entity";
 
 @Injectable()
 export class UsersService {
@@ -30,14 +32,25 @@ export class UsersService {
 
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
+
+    private readonly interestsService: InterestsService,
   ) {}
 
-  async findOneById({ id }: IUsersServiceFindOneById): Promise<User> {
-    return this.usersRepository.findOne({ where: { id } });
+  async findOneByIdWithInterests({
+    id,
+  }: IUsersServiceFindOneById): Promise<User> {
+    return this.usersRepository.findOne({
+      where: { id },
+      relations: ["interests"],
+    });
   }
 
   async findOneByEmail({ email }: IUsersServiceFindOneByEmail): Promise<User> {
     return this.usersRepository.findOne({ where: { email } });
+  }
+
+  async findOneById({ userId }: IUsersServiceFindLogin): Promise<User> {
+    return this.usersRepository.findOne({ where: { id: userId } });
   }
 
   getHashedPwd({ password }: IUsersServiceGetHashedPwd): Promise<string> {
@@ -70,34 +83,40 @@ export class UsersService {
   }
 
   async update({ id, updateUserInput }: IUsersServiceUpdate): Promise<User> {
-    const user = await this.findOneById({ id });
+    const user = await this.findOneByIdWithInterests({ id });
+
+    const { interests, ...rest } = updateUserInput;
+
+    let savedInterests: Interest[] | null;
+
+    if (interests) {
+      savedInterests = await this.interestsService.findByNames({
+        names: interests,
+      });
+    }
 
     const result = await this.usersRepository.save({
       ...user,
-      ...updateUserInput,
+      ...rest,
+      interests: savedInterests || user.interests,
     });
 
     return result;
   }
 
-  async updatePassword({ id, password }): Promise<User> {
-    const user = await this.findOneById({ id });
+  async updatePassword({ id, password }): Promise<string> {
     const pwd = await bcrypt.hash(password, 10);
 
-    return this.usersRepository.save({
-      ...user,
+    await this.usersRepository.save({
+      id,
       password: pwd,
     });
-  }
 
-  findLogin({ userId }: IUsersServiceFindLogin): Promise<User> {
-    const user = this.usersRepository.findOne({ where: { id: userId } });
-    return user;
+    return "저장 완료";
   }
 
   async delete({ id }: IUsersServiceDelete): Promise<boolean> {
     const result = await this.usersRepository.softDelete({ id });
-    console.log(result);
     return result.affected ? true : false;
   }
 

@@ -9,7 +9,7 @@ import { JwtRefreshStrategy } from "./auth/strategies/jwt-refresh.strategy";
 import { RedisClientOptions } from "redis";
 import * as redisStore from "cache-manager-redis-store";
 import { MapModule } from "./maps/maps.module";
-import { BlockUserModule } from "./blockUsers/blockUsers.module";
+import { BlockUserModule } from "./blocks/blocks.module";
 import { MailModule } from "./mails/mails.module";
 import { QuestionModule } from "./questions/questions.module";
 import { FriendsModule } from "./friends/friends.module";
