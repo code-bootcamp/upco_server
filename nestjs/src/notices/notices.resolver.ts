@@ -11,13 +11,18 @@ export class NoticesResolver {
 
   @Query(() => [Notice], { nullable: true })
   fetchNotices(): Promise<Notice[]> {
-    return this.noticesService.findAll();
+    return this.noticesService.noticeFindAll();
+  }
+
+  @Query(() => Notice)
+  fetchNotice(@Args("id") id: string): Promise<Notice> {
+    return this.noticesService.noticeFindOne({ id });
   }
 
   @Mutation(() => Notice)
   createNotice(
     @Args("createNoticeInput") createNoticeInput: CreateNoticeInput,
   ): Promise<Notice> {
-    return this.noticesService.create({ createNoticeInput });
+    return this.noticesService.createNotice({ createNoticeInput });
   }
 }
