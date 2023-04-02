@@ -1,6 +1,6 @@
 /**
  * @swagger
- * /chatRoom:
+ * /chatRoomList:
  *   get:
  *     summary: 게시글 가져오기
  *     tags: [Board]
