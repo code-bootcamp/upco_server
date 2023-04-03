@@ -11,7 +11,7 @@ on:
 env:
   PROJECT_ID: ${{ secrets.GKE_PROJECT }}
   GAR_LOCATION: asia-northeast3
-  GKE_CLUSTER: team-project-cluster
+  GKE_CLUSTER: upco-cluster
   GKE_ZONE: asia-northeast3
   DEPLOYMENT_NESTJS_NAME: nestjs
   IMAGE: nestjs
