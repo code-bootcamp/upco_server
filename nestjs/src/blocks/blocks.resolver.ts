@@ -28,7 +28,7 @@ export class BlockUserResolver {
     return this.blockUsersService.createBlock({ userId, blockedUserId });
   }
 
-  @Mutation(() => Block)
+  @Mutation(() => Boolean)
   unblockUser(
     @Context() context: IContext, //
     @Args("blockId") blockId: string, //
