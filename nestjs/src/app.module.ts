@@ -16,6 +16,7 @@ import { FriendsModule } from "./friends/friends.module";
 import { FilesModule } from "./files/files.module";
 import { NoticesModule } from "./notices/notice.module";
 import { InterestsModule } from "./interests/interests.module";
+import { AppController } from "./app.controller";
 
 @Module({
   imports: [
@@ -35,8 +36,7 @@ import { InterestsModule } from "./interests/interests.module";
         autoSchemaFile: true,
         context: ({ req, res }) => ({ req, res }),
         cors: {
-          // origin: process.env.ORIGIN,
-          origin: "*",
+          origin: process.env.ORIGIN,
           credentials: true,
         },
         uploads: false,
@@ -63,6 +63,9 @@ import { InterestsModule } from "./interests/interests.module";
   providers: [
     JwtAccessStrategy, //
     JwtRefreshStrategy,
+  ],
+  controllers: [
+    AppController, //
   ],
 })
 export class AppModule {}
