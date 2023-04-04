@@ -45,7 +45,7 @@ export class UsersResolver {
     return this.usersService.update({ id, updateUserInput });
   }
 
-  @Mutation(() => User)
+  @Mutation(() => String)
   updateUserPwd(
     @Context() context: IContext,
     @Args("password") password: string,

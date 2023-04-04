@@ -52,7 +52,7 @@ export class MapService {
 
     const radius = this.getDistanceFromLatLonInKm({ lat1, lng1, lat2, lng2 });
     const centerLocation = this.getCenterLocation({ lat1, lng1, lat2, lng2 });
-    console.log(centerLocation);
+
     const [centerLng, centerLat] = centerLocation;
 
     const aroundUsers = await client.georadius(
@@ -157,7 +157,7 @@ export class MapService {
 
     try {
       // redis 내 ttlSet 객체 안에 유저 아이디와 ttl을 저장하는 로직입니다.
-      const ttl = 3000000;
+      const ttl = 30000;
       const value = Date.now() + ttl;
       await client.zadd("ttlSet", value, id);
       // redis 내 geoSet 객체 안에 유저 아이디와 위치정보를 저장하는 로직입니다.
@@ -172,11 +172,9 @@ export class MapService {
   // 올바른 위도, 경도 값인지 검증하는 로직입니다.
   isValidLocation(lat: number, lng: number): void {
     if (lat < 33 || lat > 39) {
-      // 위도값이 올바르지 않을 때 반환되는 오류
       throw new NotAcceptableException();
     }
     if (lng < 125 || lng > 132) {
-      // 경도값이 올바르지 않을 때 반환되는 오류
       throw new NotAcceptableException();
     }
   }

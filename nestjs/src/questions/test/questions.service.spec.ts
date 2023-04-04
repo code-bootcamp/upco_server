@@ -1,104 +1,49 @@
-import { NotAcceptableException } from "@nestjs/common";
+import { CacheModule, NotAcceptableException } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
 import { getRepositoryToken } from "@nestjs/typeorm";
-import { UsersService } from "../../users/users.service";
-import { Question } from ".././entities/question.entity";
+import { Interest } from "src/interests/entities/interest.entity";
+import { InterestsService } from "src/interests/interests.service";
+import { User } from "src/users/entities/user.entity";
+import { UsersService } from "src/users/users.service";
+import { Question } from "../entities/question.entity";
 import { QuestionService } from "../questions.service";
-import { v4 as uuidv4 } from "uuid";
-import { ObjectType } from "@nestjs/graphql";
 import {
-  IQuestionServiceCreateQuestion,
-  IQuestionServiceFetchQuestions,
-} from "../interfaces/question-service.interface";
+  MockInterestRepository,
+  MockQuestionRepository,
+  MockUserRepository,
+} from "./questions-mock.DB";
 
-@ObjectType()
-class MockQuestion {
-  id: string;
-  title: string;
-  user: string;
-  contents: string;
-  createAt: Date;
-}
-class MockQuestionRepository {
-  database = [
-    {
-      id: "question1",
-      title: "title1",
-      user: "user1",
-      contents: "contents1",
-      createAt: new Date(),
-    },
-    {
-      id: "question2",
-      title: "title2",
-      user: "user1",
-      contents: "contents2",
-      createAt: new Date(),
-    },
-    {
-      id: "question3",
-      title: "title3",
-      user: "user2",
-      contents: "contents3",
-      createAt: new Date(),
-    },
-  ];
+const id = new MockQuestionRepository().database[0].user;
+const questionId = new MockQuestionRepository().database[0].id;
 
-  find({ id }: IQuestionServiceFetchQuestions): MockQuestion[] {
-    return this.database.filter((question) => question.user === id);
-  }
-
-  findOne({ questionId }): MockQuestion {
-    return this.database.find((question) => question.id === questionId);
-  }
-
-  save({
-    id,
-    createQuestionInput,
-  }: IQuestionServiceCreateQuestion): MockQuestion {
-    const newQuestion = new MockQuestion();
-    const { title, contents } = createQuestionInput;
-    newQuestion.id = uuidv4();
-    newQuestion.user = id;
-    newQuestion.title = title;
-    newQuestion.contents = contents;
-    newQuestion.createAt = new Date();
-
-    this.database.push(newQuestion);
-
-    return newQuestion;
-  }
-
-  softDelete({ questionId }): boolean {
-    const index = this.database.findIndex((item) => item.id === questionId);
-    this.database.splice(index, 1);
-    const result = this.findOne({ questionId });
-    return !result ? true : false;
-  }
-}
-describe("QuestionService", () => {
+describe("questions.service", () => {
   let questionService: QuestionService;
-  let userService: UsersService;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    const mockModule: TestingModule = await Test.createTestingModule({
+      imports: [
+        CacheModule.register({}), //
+      ],
       providers: [
-        QuestionService,
+        QuestionService, //
+        UsersService, //
+        InterestsService, //
         {
           provide: getRepositoryToken(Question),
           useClass: MockQuestionRepository,
         },
         {
-          provide: UsersService,
-          useValue: {
-            findOneById: jest.fn(),
-          },
+          provide: getRepositoryToken(User),
+          useClass: MockUserRepository,
+        },
+        {
+          provide: getRepositoryToken(Interest),
+          useClass: MockInterestRepository,
         },
       ],
     }).compile();
 
-    questionService = module.get<QuestionService>(QuestionService);
-    userService = module.get<UsersService>(UsersService);
+    questionService = mockModule.get<QuestionService>(QuestionService);
   });
 
   afterEach(() => {
@@ -106,89 +51,110 @@ describe("QuestionService", () => {
   });
 
   describe("createQuestion", () => {
-    it("createQuestion 실행 시 정상적으로 저장되어야 함", () => {
-      const mockQuestionRepository = new MockQuestionRepository();
-      const id = "user1";
-      const createQuestionInput = {
-        title: "testTitle",
-        contents: "testContents",
-      };
-
-      const result = mockQuestionRepository.save({
+    const createQuestionInput = {
+      title: "test-title",
+      contents: "test-contents",
+    };
+    it("정상 작동 시 question 반환", async () => {
+      const result = await questionService.createQuestion({
         id,
         createQuestionInput,
       });
 
-      expect(result).toEqual({
+      expect(result).toStrictEqual({
         id: expect.any(String),
         user: "user1",
-        title: "testTitle",
-        contents: "testContents",
+        title: "test-title",
+        contents: "test-contents",
         createAt: expect.any(Date),
       });
     });
-    describe("checkEmpty", () => {
-      it("checkEmpty 함수 전체 공백 시 error 반환해야 함", () => {
-        const text = "   ";
-        expect(() => questionService.checkEmpty(text)).toThrow(
-          NotAcceptableException,
-        );
-      });
 
-      it("checkEmpty 함수 맨 앞 공백 시 error 반환해야 함", () => {
-        const text = " a";
-        expect(() => questionService.checkEmpty(text)).toThrow(
-          NotAcceptableException,
-        );
-      });
+    it("아이디값 올바르지 않을 시 에러 반환", async () => {
+      const id = "notExistId";
+
+      try {
+        await questionService.createQuestion({
+          id,
+          createQuestionInput,
+        });
+      } catch (error) {
+        expect(error).toBeInstanceOf(NotAcceptableException);
+      }
     });
   });
 
+  describe("checkEmpty", () => {
+    it("전체 공백 시 에러 반환 함", () => {
+      const text = "  ";
+      expect(() => questionService.checkEmpty(text)).toThrow(
+        NotAcceptableException,
+      );
+    });
+
+    it("맨 앞 공백 시 error 반환해야 함", () => {
+      const text = " a";
+      expect(() => questionService.checkEmpty(text)).toThrow(
+        NotAcceptableException,
+      );
+    });
+
+    it("정상 데이터 입력 시 반환값 없음", () => {
+      const text = "aa";
+      const result = questionService.checkEmpty(text);
+      expect(result).toBeUndefined();
+    });
+  });
   describe("fetchQuestion", () => {
-    it("fetchQuestion 함수 실행 시 questionId에 해당하는 데이터 가져와야 함", () => {
-      const questionId = "question1";
-      const mockQuestionRepository = new MockQuestionRepository();
-      const result = mockQuestionRepository.findOne({ questionId });
+    it("questionId에 해당하는 데이터 가져와야 함", () => {
+      const result = questionService.fetchQuestion({ id, questionId });
       expect(result).toEqual({
         id: "question1",
         title: "title1",
         user: "user1",
         contents: "contents1",
-        createAt: expect.any(Date),
+        createAt: new Date("2022-01-01T00:00:00.000Z"),
       });
     });
   });
 
   describe("fetchQuestions", () => {
-    it("fetchQuestions 함수 실행 시 id에 해당하는 데이터 가져와야 함", () => {
-      const id = "user1";
-      const mockQuestionRepository = new MockQuestionRepository();
-      const result = mockQuestionRepository.find({ id });
+    it("fetchQuestions 함수 실행 시 id에 해당하는 데이터 가져와야 함", async () => {
+      const result = await questionService.fetchQuestions({ id });
 
-      expect(result).toEqual(
-        mockQuestionRepository.database.filter(
-          (question) => question.user === id,
-        ),
-      );
+      expect(result).toEqual([
+        {
+          id: "question2",
+          title: "title2",
+          user: "user1",
+          contents: "contents2",
+          createAt: new Date("2023-01-01T00:00:00.000Z"),
+        },
+        {
+          id: "question1",
+          title: "title1",
+          user: "user1",
+          contents: "contents1",
+          createAt: new Date("2022-01-01T00:00:00.000Z"),
+        },
+      ]);
     });
+  });
 
-    describe("extractNumberFromDate", () => {
-      it("extractNumberFromDate 함수에 date 객체 입력 시 숫자를 추출하여 반환해야 함", () => {
-        const date = new Date("2022-01-01T00:00:00.000Z");
-        const result = questionService.extractNumberFromDate(date);
-        const expectResult = 20220101000000000;
+  describe("extractNumberFromDate", () => {
+    it("extractNumberFromDate 함수에 date 객체 입력 시 숫자를 추출하여 반환해야 함", () => {
+      const date = new Date("2022-01-01T00:00:00.000Z");
+      const result = questionService.extractNumberFromDate(date);
+      const expectResult = 20220101000000000;
 
-        expect(result).toBe(expectResult);
-      });
+      expect(result).toBe(expectResult);
     });
   });
 
   describe("deleteQuestion", () => {
-    it("deleteQuestion 실행 시 questionId에 해당하는 데이터가 삭제되어야 함", () => {
-      const questionId = "question1";
-      const mockQuestionRepository = new MockQuestionRepository();
+    it("questionId에 해당하는 데이터가 삭제되어야 함", async () => {
+      const result = await questionService.deleteQuestion({ id, questionId });
 
-      const result = mockQuestionRepository.softDelete({ questionId });
       expect(result).toBe(true);
     });
   });

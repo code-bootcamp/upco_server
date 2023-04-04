@@ -14,7 +14,6 @@ module.exports = (server) => {
     const ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
 
     console.log("클라이언트 연결 : ", ip, socket.id);
-    // socket.emit("join message", "채팅방에 입장하셨습니다.");
 
     // 소켓 연결 해제
     socket.on("disconnect", () => {
@@ -26,9 +25,11 @@ module.exports = (server) => {
       console.error(error);
     });
 
+    // 채팅방 생성
     socket.on("createRoom", async (myId, anotherId) => {
       let roomId;
 
+      // 처음 채팅방 생성
       if (Object.keys(chatRoom).length === 0) {
         roomId = uuidv4();
         chatRoom[roomId] = {
@@ -54,27 +55,25 @@ module.exports = (server) => {
           };
         }
       }
-      // console.log(roomId, myId, anotherId);
 
       const newChatRoom = new ChatModel({
-        roomId,
+        roomId, 
         senderId: myId,
         receiverId: anotherId,
         createdAt: Date.now(),
       });
-      // console.log(newChatRoom);
       const result = await newChatRoom.save();
-      // console.log(result);
       socket.join(roomId);
       socket.emit("roomCreateOrJoin", roomId, "채팅방에 입장하셨습니다.");
     });
 
+    // 채팅방 입장
     socket.on("joinRoom", async (chatRoomId) => {
       const joinChatRoom = await MessageModel.find({ chatRoomId });
-      // console.log(chatRoomId, joinChatRoom);
       socket.emit("load Message", joinChatRoom);
     });
 
+    // 메시지 보내기
     socket.on("message", async (message) => {
       const { roomId, contents, myId } = message;
       chatRoom[roomId].message.push({
@@ -89,28 +88,23 @@ module.exports = (server) => {
       });
 
       const result = await newChat.save();
-      // console.log(result);
 
       socket.join(message.roomId);
       socket.broadcast
         .to(message.roomId)
         .emit("client", message.contents, message.myId);
-      console.log(message.roomId, message.contents, message.myId);
     });
 
     // 화상채팅 부분
     socket.on("offer", (offer) => {
-      // console.log(offer);
       socket.emit("offer", offer.sdp);
     });
 
     socket.on("answer", (answer) => {
-      // console.log(answer);
       socket.emit("answer", answer.sdp);
     });
 
     socket.on("candidate", (candidate) => {
-      // console.log(candidate);
       socket.emit("candidate", candidate);
     });
   });

@@ -12,7 +12,7 @@ const swaggerJSDoc = require("swagger-jsdoc");
 const { options } = require("./swagger/config.js");
 const ChatModel = require("./models/chatModel.js");
 
-app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
+app.use(cors());
 app.use(express.json());
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerJSDoc(options)));
 
@@ -28,7 +28,7 @@ app.get("/chatRoomList/:senderId/", async (req, res) => {
     const { senderId } = req.params;
 
     if (!senderId) {
-      return res.status(400).send({ message: "유저 아이디가 없습니다." });
+      return res.status(400).send(error);
     }
 
     const chat = await ChatModel.find({ senderId });
@@ -36,18 +36,18 @@ app.get("/chatRoomList/:senderId/", async (req, res) => {
     console.log(senderId);
 
     if (!chat) {
-      return res.status(404).send({ message: "채팅이 없습니다." });
+      return res.status(404).send(error);
     }
 
     if (chat.length === 0) {
-      return res.status(404).send({ message: "채팅이 없습니다." });
+      return res.status(404).send(error);
     }
 
     console.log(chat);
     return res.status(200).send({ data: chat });
   } catch (error) {
     console.error(error);
-    return res.status(500).send({ message: "에러입니다." });
+    return res.status(500).send(error);
   }
 });
 
