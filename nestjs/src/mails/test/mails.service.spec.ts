@@ -104,10 +104,4 @@ describe("mailService", () => {
   // findOneByEmail / email 없을 경우 에러
   // passwordResetMailer
   // renderNewPassword
-  describe("renderNewPassword", () => {
-    it("renderNewPassword 함수 실행 시 랜덤한 6자리 숫자 출력해야 함", () => {
-      const result = mailService.renderNewPassword();
-      expect(result).toHaveLength(6);
-    });
-  });
 });

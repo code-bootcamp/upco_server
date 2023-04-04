@@ -15,15 +15,31 @@ exports.createChatRoom = async (req, res) => {
   }
 };
 
-exports.userChats = async (req, res) => {
+exports.userChatsRoomList = async (req, res) => {
   try {
-    const chat = await ChatModel.find({
-      roomId,
-      chatMembers: { $in: [req.params.userId] },
-    });
-    res.status(200).send(chat);
+    const { senderId, receiverId } = req.params;
+
+    if (!senderId || !receiverId) {
+      return res.status(400).send({ message: "유저 아이디가 없습니다." });
+    }
+
+    const chat = await ChatModel.find({ senderId, receiverId });
+
+    console.log(senderId, receiverId);
+
+    if (!chat) {
+      return res.status(404).send({ message: "채팅이 없습니다." });
+    }
+
+    if (chat.length === 0) {
+      return res.status(404).send({ message: "채팅이 없습니다." });
+    }
+
+    console.log(chat);
+    return res.status(200).send({ chat });
   } catch (error) {
-    res.status(500).send(error);
+    console.error(error);
+    return res.status(500).send({ message: "에러입니다." });
   }
 };
 
