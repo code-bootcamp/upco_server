@@ -1,9 +1,9 @@
 /**
  * @swagger
- * /chatRoomList:
+ * /chatRoomList:senderId:
  *   get:
- *     summary: 게시글 가져오기
- *     tags: [Board]
+ *     summary: 채팅방 목록 가져오기
+ *     tags: [ChatRoomList]
  *     parameters:
  *       - in: 설명 입력
  *         name: number
@@ -17,26 +17,26 @@
  *               type: array
  *               items:
  *                 properties:
- *                   number:
- *                     type: int
- *                     example: 1
- *                   writer:
+ *                   roomId:
  *                     type: string
- *                     example: 철수
- *                   title:
+ *                     example: 채팅방 아이디
+ *                   senderId:
  *                     type: string
- *                     example: 좋은아침 입니다~
- *                   contents:
+ *                     example: 보낸사람 아이디
+ *                   receiverId:
  *                     type: string
- *                     example: 오늘 하루도 파이팅 하세요!
+ *                     example: 받는사람 아이디
+ *                   createdAt:
+ *                     type: Date
+ *                     example: 채팅방 생성 날짜
  */
 
 /**
  * @swagger
- * /chatRoom:
+ * /chatRoomList:senderId:
  *   post:
- *     summary: 게시글 등록하기s
- *     tags: [Board]
+ *     summary: 채팅방 목록 가져오기
+ *     tags: [ChatRoomList]
  *     responses:
  *       200:
  *         description: 성공

@@ -1,13 +1,15 @@
 const ChatModel = require("../models/chatModel.js");
 
+// 채팅방 만들기
 exports.createChatRoom = async (req, res) => {
-  const newChat = new ChatModel({
-    roomId: req.body.roomId,
-    senderId: req.body.senderId,
-    receiverId: req.body.receiverId,
-    createdAt: req.body.createdAt,
-  });
   try {
+    const { roomId, senderId, receiverId, createdAt } = req.body;
+    const newChat = new ChatModel({
+      roomId,
+      senderId,
+      receiverId,
+      createdAt,
+    });
     const result = await newChat.save();
     res.status(200).send(result);
   } catch (error) {
@@ -15,12 +17,13 @@ exports.createChatRoom = async (req, res) => {
   }
 };
 
-exports.userChatsRoomList = async (req, res) => {
+// 채팅방 리스트 전체 조회
+exports.ChatsRoomList = async (req, res) => {
   try {
     const { senderId, receiverId } = req.params;
 
     if (!senderId || !receiverId) {
-      return res.status(400).send({ message: "유저 아이디가 없습니다." });
+      return res.status(400).send(error);
     }
 
     const chat = await ChatModel.find({ senderId, receiverId });
@@ -28,27 +31,27 @@ exports.userChatsRoomList = async (req, res) => {
     console.log(senderId, receiverId);
 
     if (!chat) {
-      return res.status(404).send({ message: "채팅이 없습니다." });
+      return res.status(404).send(error);
     }
 
     if (chat.length === 0) {
-      return res.status(404).send({ message: "채팅이 없습니다." });
+      return res.status(404).send(error);
     }
 
-    console.log(chat);
     return res.status(200).send({ chat });
   } catch (error) {
     console.error(error);
-    return res.status(500).send({ message: "에러입니다." });
+    return res.status(500).send(error);
   }
 };
 
+// 특정 채팅방 조회
 exports.findChat = async (req, res) => {
   try {
-    const chat = await ChatModel.findOne({
-      chatMembers: { $all: [req.params.firstId, req.params.secondId] },
-    });
-    res.status(200).send(chat);
+    const { senderId, receiverId } = req.params;
+
+    const chat = await ChatModel.findOne({ senderId, receiverId });
+    res.status(200).send({ chat });
   } catch (error) {
     res.status(500).send(error);
   }
