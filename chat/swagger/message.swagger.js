@@ -2,8 +2,8 @@
  * @swagger
  * /message:
  *   get:
- *     summary: 게시글 가져오기
- *     tags: [Board]
+ *     summary: 메시지 가져오기
+ *     tags: [Message]
  *     parameters:
  *       - in: 설명 입력
  *         name: number
@@ -17,26 +17,26 @@
  *               type: array
  *               items:
  *                 properties:
- *                   number:
- *                     type: int
- *                     example: 1
- *                   writer:
+ *                   chatRoomId:
  *                     type: string
- *                     example: 철수
- *                   title:
+ *                     example: 메시지 아이디
+ *                   senderId:
  *                     type: string
- *                     example: 좋은아침 입니다~
+ *                     example: 보낸사람 아이디
  *                   contents:
  *                     type: string
- *                     example: 오늘 하루도 파이팅 하세요!
+ *                     example: 메시지 내용
+ *                   createdAt:
+ *                     type: Date
+ *                     example: 메시지 생성 날짜
  */
 
 /**
  * @swagger
  * /message:
  *   post:
- *     summary: 게시글 등록하기
- *     tags: [Board]
+ *     summary: 메시지 가져오기
+ *     tags: [Message]
  *     responses:
  *       200:
  *         description: 성공
