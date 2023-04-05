@@ -22,7 +22,7 @@ export class JwtAccessStrategy extends PassportStrategy(Strategy, "access") {
       `accessToken=${accessToken}`,
     );
 
-    if (!cachedAccessToken) {
+    if (cachedAccessToken) {
       throw new UnauthorizedException("로그아웃한 토큰입니다.");
     }
 
