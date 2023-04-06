@@ -225,3 +225,46 @@
     ├── .gitignore
     └── docker-compose.dev.yaml
 ```
+
+### env 내용
+
+```
+.env
+############### chat ###############
+MONGODB_CONNECTION
+MONGO_ID
+MONGO_PASSWORD
+
+############### nestjs #################
+TYPEORM_HOST=mysql
+TYPEORM_PORT=mysql port
+TYPEORM_USERNAME=mysql user name
+TYPEORM_PASSWORD=mysql user password
+TYPEORM_DATABASE=mysql
+REDIS_CONNECTION=Redis connection url
+REDIS_HOST=redis host
+REDIS_PORT=redis port
+REDIS_DB=redis DB
+JWT_ACCESS_KEY=Jwt Access Secret key
+JWT_REFRESH_KEY=Jwt Refresh Secret key
+ORIGIN=frontend url
+MAIL_SERVICE=gmail
+MAIL_AUTH_USER=gmail auth user
+MAIL_AUTH_PASSWORD=gmail auth password
+TZ='asia/Seoul'
+GOOGLE_CLIENT_ID=google auth client id
+GOOGLE_CLIENT_SECRET=google auth secret key
+KAKAO_CLIENT_ID=kakao auth client id
+KAKAO_CLIENT_SECRET=kakao auth secret key
+GCP_STORAGE_ID=gcp project id
+GCP_STORAGE_KEYFILE=gcp key file
+GCP_STORAGE_BUCKET=gcp bucket name
+```
+
+### 서버 구동 방법
+
+```
+docker-compose -f ./docker-compose.dev.yaml build
+
+docker-compose -f ./docker-compose.dev.yaml up
+```
