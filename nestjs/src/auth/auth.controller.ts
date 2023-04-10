@@ -13,10 +13,14 @@ export class AuthController {
 
   @Get("/login/:social")
   @UseGuards(SocialAuthGuard)
-  async loginGoogle(
+  async login(
     @Req() req: Request & IOauthUser & IProvider, //
     @Res() res: Response,
   ) {
-    this.authService.socialLogin({ req, res, provider: req.params.soical });
+    return this.authService.socialLogin({
+      req,
+      res,
+      provider: req.params.soical,
+    });
   }
 }

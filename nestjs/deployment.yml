@@ -123,6 +123,21 @@ spec:
                 configMapKeyRef:
                   name: nestjs-config
                   key: KAKAO_CLIENT_SECRET
+            - name: GCP_STORAGE_ID
+              valueFrom:
+                configMapKeyRef:
+                  name: nestjs-config
+                  key: GCP_STORAGE_ID
+            - name: GCP_STORAGE_KEYFILE
+              valueFrom:
+                configMapKeyRef:
+                  name: nestjs-config
+                  key: GCP_STORAGE_KEYFILE
+            - name: GCP_STORAGE_BUCKET
+              valueFrom:
+                configMapKeyRef:
+                  name: nestjs-config
+                  key: GCP_STORAGE_BUCKET
           resources:
             requests:
               cpu: 100m
