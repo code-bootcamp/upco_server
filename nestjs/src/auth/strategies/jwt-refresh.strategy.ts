@@ -26,7 +26,7 @@ export class JwtRefreshStrategy extends PassportStrategy(Strategy, "refresh") {
       `refreshToken=${refreshToken}`,
     );
 
-    if (!cachedRefreshToken) {
+    if (cachedRefreshToken) {
       throw new UnauthorizedException("로그아웃한 토큰입니다.");
     }
 

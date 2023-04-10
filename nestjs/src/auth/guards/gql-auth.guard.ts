@@ -20,7 +20,7 @@ export class GqlAuthAccessGuard extends AuthGuard("access") {
       context.getHandler(),
     );
 
-    if (isPublic) {
+    if (isPublic || context.getType() === "http") {
       return true;
     }
     return super.canActivate(context);
