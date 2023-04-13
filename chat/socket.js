@@ -4,7 +4,7 @@ const ChatModel = require("./models/chatModel.js");
 const MessageModel = require("./models/messageModel.js");
 
 module.exports = (server) => {
-  const io = socket(server, { path: "/socket.io" });
+  const io = socket(server, { path: "chat/socket.io" });
 
   const chatRoom = {};
 
