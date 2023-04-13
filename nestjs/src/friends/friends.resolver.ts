@@ -2,15 +2,16 @@ import { Args, Context, Mutation, Query, Resolver } from "@nestjs/graphql";
 import { IContext } from "src/common/interfaces/context";
 import { Friend } from "./entities/friend.entity";
 import { FriendsService } from "./friends.service";
+import { User } from "src/users/entities/user.entity";
 
 @Resolver()
 export class FriendsResolver {
   constructor(private readonly friendsService: FriendsService) {}
 
-  @Query(() => [Friend])
-  fetchFirends(
+  @Query(() => [User])
+  fetchFriends(
     @Context() context: IContext, //
-  ): Promise<Friend[]> {
+  ): Promise<User[]> {
     const userId = context.req.user.id;
     return this.friendsService.findFriends({ userId });
   }
@@ -32,11 +33,11 @@ export class FriendsResolver {
     return this.friendsService.rejectRequests({ id, receiverId });
   }
 
-  @Mutation(() => [Friend])
+  @Mutation(() => Boolean)
   acceptFriendRequest(
     @Context() context: IContext,
     @Args("requestId") id: string,
-  ): Promise<Friend[]> {
+  ): Promise<boolean> {
     const receiverId = context.req.user.id;
     return this.friendsService.acceptRequest({ id, receiverId });
   }

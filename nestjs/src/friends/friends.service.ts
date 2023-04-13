@@ -8,6 +8,7 @@ import {
   IFriendsServiceSenderIdAndReceiverId,
   IFriendsServiceUserId,
 } from "./interfaces/friend-service.interface";
+import { User } from "src/users/entities/user.entity";
 
 @Injectable()
 export class FriendsService {
@@ -25,19 +26,23 @@ export class FriendsService {
         receiver: {
           id: userId,
         },
+        status: false
       },
+      relations: ["sender"],
     });
   }
 
-  async findFriends({ userId }: IFriendsServiceUserId): Promise<Friend[]> {
-    return this.friendsRepository.find({
+  async findFriends({ userId }: IFriendsServiceUserId): Promise<User[]> {
+    const request = await this.friendsRepository.find({
       where: {
         sender: {
           id: userId,
         },
         status: true,
       },
+      relations: ["receiver"],
     });
+    return request.map((req: Friend) => req.receiver)
   }
 
   async findRequestBySenderIdAndReceiverId({
@@ -84,7 +89,7 @@ export class FriendsService {
   async acceptRequest({
     id,
     receiverId,
-  }: IFriendsServiceIdAndReceiverId): Promise<Friend[]> {
+  }: IFriendsServiceIdAndReceiverId): Promise<boolean> {
     await this.verifyRequest({ id, receiverId });
 
     const queryRunner = this.dataSource.createQueryRunner();
@@ -123,11 +128,11 @@ export class FriendsService {
         status: true,
       });
 
-      const addedFriend = await queryRunner.manager.save(newRequest);
+      await queryRunner.manager.save(newRequest);
 
       await queryRunner.commitTransaction();
 
-      return [updateRequest, addedFriend];
+      return true;
     } catch (error) {
       await queryRunner.rollbackTransaction();
     } finally {

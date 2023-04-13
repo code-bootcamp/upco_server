@@ -23,7 +23,8 @@ app.get("/", (req, res) => {
   res.send("health check");
 });
 
-app.get("chat/chatRoomList/:senderId/", async (req, res) => {
+
+app.get("/chat/chatRoomList/:senderId/", async (req, res) => {
   try {
     const { senderId } = req.params;
 

@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: "upco-ingress-static-ip"
+    networking.gke.io/managed-certificates: managed-cert
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /chat/*
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: chat-service
+                port:
+                  number: 80
+          - path: /*
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: nestjs-service
+                port:
+                  number: 80

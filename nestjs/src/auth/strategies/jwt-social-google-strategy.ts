@@ -7,6 +7,7 @@ export class JwtGoogleStrategy extends PassportStrategy(Strategy, "google") {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       callbackURL: "https://api.upco.space/login/google",
+      scope: ["email", "profile"],
     });
   }
 

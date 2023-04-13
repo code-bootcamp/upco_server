@@ -27,6 +27,7 @@ export class BlockUserService {
           id: userId,
         },
       },
+      relations: ["blocked_user", "blocker"],
     });
   }
 
@@ -90,11 +91,14 @@ export class BlockUserService {
   }
 
   async deleteBlock({ id, blockerId }: IBlcosServiceDelete): Promise<boolean> {
-    const isVerify = await this.findOneByIdAndBlockerId({ id, blockerId });
+    const isVerify = await this.findOneByBlockerIdAndBlockedUserId({
+      blockerId,
+      blockedUserId: id,
+    });
 
     if (!isVerify) throw new NotAcceptableException();
 
-    const result = await this.blocksRepository.delete({ id });
+    const result = await this.blocksRepository.delete({ id: isVerify.id });
 
     return result.affected ? true : false;
   }

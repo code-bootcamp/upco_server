@@ -1,4 +1,9 @@
-import { Injectable, UnprocessableEntityException } from "@nestjs/common";
+import {
+  CACHE_MANAGER,
+  Inject,
+  Injectable,
+  UnprocessableEntityException,
+} from "@nestjs/common";
 import { UsersService } from "src/users/users.service";
 import {
   IAuthServiceGetAccessToken,
@@ -13,6 +18,7 @@ import { JwtService } from "@nestjs/jwt";
 
 import * as bcrypt from "bcrypt";
 import getRandomNickName from "src/common/util/getRandomNickname";
+import { Cache } from "cache-manager";
 
 @Injectable()
 export class AuthService {
@@ -20,15 +26,17 @@ export class AuthService {
     private readonly jwtService: JwtService, //
 
     private readonly usersService: UsersService,
+
+    @Inject(CACHE_MANAGER)
+    private readonly cacheManager: Cache,
   ) {}
 
   async login({ email, password, res }: IAuthServiceLogin): Promise<string> {
     const user = await this.usersService.findOneByEmail({ email });
-    if (!user) throw new UnprocessableEntityException("이메일이 없습니다.");
+    if (!user) throw new UnprocessableEntityException("");
 
     const isAuth = await bcrypt.compare(password, user.password);
-    if (!isAuth)
-      throw new UnprocessableEntityException("비밀번호가 틀렸습니다.");
+    if (!isAuth) throw new UnprocessableEntityException("");
 
     this.setRefreshToken({ user, res });
 
@@ -46,13 +54,33 @@ export class AuthService {
         provider,
       });
     this.setRefreshToken({ user, res });
-    res.redirect(process.env.ORIGIN + "/frontend/login");
+    res.redirect(process.env.ORIGIN + "/main");
   }
 
   async logout({ req }: IAuthServiceLogout): Promise<string> {
-    // 레디스에 refresh 토큰과 access 토큰 등록하기
-    // 쿠키 파괴하기
-    return "로그아웃 완료";
+    const refreshToken = req.headers.cookie.replace("refreshToken=", "");
+    const accessToken = req.headers.authorization.replace("Bearer ", "");
+
+    try {
+      this.jwtService.verify(refreshToken, {
+        secret: process.env.JWT_REFRESH_KEY,
+      });
+      this.jwtService.verify(accessToken, {
+        secret: process.env.JWT_ACCESS_KEY,
+      });
+    } catch (error) {
+      throw new UnprocessableEntityException("");
+    }
+
+    await Promise.all([
+      this.cacheManager.set(`refreshToken=${refreshToken}`, "refresh", {
+        ttl: 604800,
+      }),
+      this.cacheManager.set(`accessToken=${accessToken}`, "access", {
+        ttl: 3600,
+      }),
+    ]);
+    return "로그아웃에 성공했습니다";
   }
 
   setRefreshToken({ user, res }: IAuthServiceSetRefreshToken): void {
@@ -60,6 +88,13 @@ export class AuthService {
       { sub: { email: user.email, id: user.id } },
       { secret: process.env.JWT_REFRESH_KEY, expiresIn: "2w" },
     );
+
+    res.setHeader(
+      "Set-Cookie",
+      `refreshToken=${refreshToken}; path=/; domain=.api.upco.space; SameSite=None;`,
+    );
+    res.setHeader("Access-Control-Allow-Origin", process.env.ORIGIN);
+    res.setHeader("Access-Control-Allow-Credentials", "true");
 
     // res.setHeader(
     //   "Set-Cookie",
