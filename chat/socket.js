@@ -57,12 +57,13 @@ module.exports = (server) => {
       }
 
       const newChatRoom = new ChatModel({
-        roomId, 
+        roomId,
         senderId: myId,
         receiverId: anotherId,
         createdAt: Date.now(),
       });
       const result = await newChatRoom.save();
+      console.log(result, roomId);
       socket.join(roomId);
       socket.emit("roomCreateOrJoin", roomId, "채팅방에 입장하셨습니다.");
     });
@@ -88,7 +89,6 @@ module.exports = (server) => {
       });
 
       const result = await newChat.save();
-
       socket.join(message.roomId);
       socket.broadcast
         .to(message.roomId)
@@ -97,14 +97,17 @@ module.exports = (server) => {
 
     // 화상채팅 부분
     socket.on("offer", (offer) => {
+      console.log(offer);
       socket.emit("offer", offer.sdp);
     });
 
     socket.on("answer", (answer) => {
+      console.log(answer);
       socket.emit("answer", answer.sdp);
     });
 
     socket.on("candidate", (candidate) => {
+      console.log(candidate);
       socket.emit("candidate", candidate);
     });
   });
